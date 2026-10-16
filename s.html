@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Emergency information</title>
+<style>
+:root{--ink:#101820;--red:#c8102e;--amber:#ffc72c;--line:#d9dde1}
+*{box-sizing:border-box}
+body{margin:0;font:18px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:#fff}
+header{background:var(--red);color:#fff;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.sos{background:#fff;color:var(--red);font-weight:800;padding:12px 18px;border-radius:8px;text-decoration:none}
+main{max-width:640px;margin:0 auto;padding:20px 18px 48px}
+h1{font-size:2.4rem;line-height:1.1;margin:.2em 0 .5em}
+.alert{background:var(--amber);padding:14px 16px;border-radius:8px;font-weight:700;margin:0 0 18px}
+dl{margin:0}
+dt{font-weight:700;margin-top:18px;padding-top:14px;border-top:1px solid var(--line)}
+dd{margin:4px 0 0;white-space:pre-wrap}
+.call{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:12px;padding:16px;border:2px solid var(--ink);border-radius:8px;color:var(--ink);text-decoration:none;font-weight:700}
+.call span{font-weight:400}
+</style>
+</head>
+<body>
+<header><strong>Emergency information</strong><a class="sos" href="tel:911">Call 911</a></header>
+<main><p>Loading…</p></main>
+<script>
+const API = "https://asia-southeast1-sos-tag-ph.cloudfunctions.net/scan";
+const code = new URLSearchParams(location.search).get("code") || location.pathname.split("/").filter(Boolean).pop() || "";
+const m = document.querySelector("main");
+const el = (t, c, x) => { const n = document.createElement(t); if (c) n.className = c; if (x != null) n.textContent = x; return n; };
+const say = (h, p) => m.replaceChildren(el("h1", 0, h), el("p", 0, p));
+
+fetch(`${API}?code=${encodeURIComponent(code)}`)
+  .then((r) => r.json())
+  .then((d) => {
+    if (d.status === "invalid") return say("Unknown tag", "This code is not registered.");
+    if (d.status === "blocked") return say("Tag deactivated", "The owner marked this tag as lost. Call 911 if someone needs help.");
+    if (d.status === "unclaimed") {
+      say("This tag is not activated yet", "If it is yours, activate it to add your emergency details.");
+      const a = el("a", "call", "Activate this tag"); a.href = `/app.html?code=${encodeURIComponent(code)}`;
+      return m.append(a);
+    }
+    const p = d.profile;
+    m.replaceChildren(el("h1", 0, p.name || "Name not provided"));
+    if (p.allergies) m.append(el("p", "alert", "Allergies: " + p.allergies));
+    const dl = el("dl");
+    [["Blood type", p.blood], ["Medical conditions", p.conditions], ["Medications", p.meds], ["Notes", p.notes]]
+      .forEach(([k, v]) => { if (v) dl.append(el("dt", 0, k), el("dd", 0, v)); });
+    m.append(dl);
+    (p.contacts || []).forEach((c) => {
+      const a = el("a", "call"); a.href = "tel:" + String(c.phone).replace(/[^+\d]/g, "");
+      a.append(el("b", 0, c.name || "Emergency contact"), el("span", 0, c.phone));
+      m.append(a);
+    });
+  })
+  .catch(() => say("Could not load", "Check the connection and reload. In an emergency, call 911."));
+</script>
+</body>
+</html>
