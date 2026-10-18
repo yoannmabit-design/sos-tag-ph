@@ -4,6 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<meta name="theme-color" content="#c8102e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="SOS Tag">
 <title>Emergency information</title>
 <style>
 :root{--ink:#101820;--red:#c8102e;--amber:#ffc72c;--line:#d9dde1}
@@ -24,7 +30,7 @@ dd{margin:4px 0 0;white-space:pre-wrap}
 </style>
 </head>
 <body>
-<header><strong>Emergency information</strong><a class="sos" href="tel:911">Call 911</a></header>
+<header><img src="/icon.svg" alt="" width="28" height="28" style="vertical-align:middle;margin-right:10px"><strong>Emergency information</strong><a class="sos" href="tel:911">Call 911</a></header>
 <main><p>Loading…</p></main>
 <script>
 const API = "https://asia-southeast1-sos-tag-ph.cloudfunctions.net/scan";
@@ -95,5 +101,6 @@ fetch(`${API}?code=${encodeURIComponent(code)}`)
   })
   .catch(() => say("Could not load", "Check the connection and reload. In an emergency, call 911."));
 </script>
+<script>if ("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js");</script>
 </body>
 </html>

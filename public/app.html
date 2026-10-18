@@ -3,6 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<meta name="theme-color" content="#c8102e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="SOS Tag">
 <title>SOS Tag — my profile</title>
 <style>
 :root{--ink:#101820;--red:#c8102e;--line:#d9dde1}
@@ -21,7 +27,7 @@ li{padding:8px 0;border-top:1px solid var(--line);list-style:none}ul{padding:0}
 </head>
 <body>
 <main>
-<h1>SOS Tag</h1>
+<h1><img src="/icon.svg" alt="" width="36" height="36" style="vertical-align:middle;margin-right:10px">SOS Tag</h1>
 <p id="msg"></p>
 <section id="auth">
   <label>Email <input id="email" type="email" autocomplete="email"></label>
@@ -71,12 +77,12 @@ import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/
 
 // Configuration Firebase du projet sos-tag-ph (section « Vos applications » de la console).
 const app = initializeApp({
-  apiKey: "AIzaSyDM0QaPpVg6M3NWPhIU_xi95l1cmKw9Ovg",
+  apiKey: "COLLER_ICI",
   authDomain: "sos-tag-ph.firebaseapp.com",
   projectId: "sos-tag-ph",
   storageBucket: "sos-tag-ph.firebasestorage.app",
-  messagingSenderId: "141929757363",
-  appId: "1:141929757363:web:cfc64e41dc0a71c8ec4ec6"
+  messagingSenderId: "COLLER_ICI",
+  appId: "COLLER_ICI"
 });
 
 const auth = getAuth(app), db = getFirestore(app), fn = getFunctions(app, "asia-southeast1");
@@ -152,5 +158,6 @@ async function listTags(u) {
   });
 }
 </script>
+<script>if ("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js");</script>
 </body>
 </html>

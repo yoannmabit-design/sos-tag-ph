@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<meta name="theme-color" content="#c8102e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="SOS Tag">
+<title>SOS Tag — administration</title>
+<style>
+:root{--ink:#101820;--red:#c8102e;--line:#d9dde1}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink)}
+main{max-width:720px;margin:0 auto;padding:24px 18px 60px}
+h1{font-size:1.8rem;margin:0 0 .6em}h2{font-size:1.2rem;margin:1.8em 0 .5em}
+label{display:block;font-weight:600;margin-top:12px}
+input{width:100%;font:inherit;padding:9px;border:1.5px solid var(--ink);border-radius:6px;margin-top:4px}
+button{font:inherit;font-weight:700;padding:10px 16px;margin:14px 8px 0 0;border-radius:6px;border:2px solid var(--red);background:var(--red);color:#fff;cursor:pointer}
+button.ghost{background:#fff;color:var(--red)}
+#msg{font-weight:600;min-height:1.4em}
+table{width:100%;border-collapse:collapse;margin-top:10px}
+td,th{text-align:left;padding:6px;border-bottom:1px solid var(--line);font-family:ui-monospace,Consolas,monospace}
+.note{color:#4a5560;font-size:.95rem}
+</style>
+</head>
+<body>
+<main>
+<h1><img src="/icon.svg" alt="" width="36" height="36" style="vertical-align:middle;margin-right:10px">SOS Tag — administration</h1>
+<p id="msg"></p>
+
+<section id="login" hidden>
+  <label>Email <input id="email" type="email" autocomplete="email"></label>
+  <label>Mot de passe <input id="pass" type="password" autocomplete="current-password"></label>
+  <button id="in">Se connecter</button>
+</section>
+
+<section id="panel" hidden>
+  <p class="note">Connecté. <button id="out" class="ghost">Se déconnecter</button></p>
+
+  <h2>1. Créer un lot de codes</h2>
+  <label>Nom du lot <input id="batchName" value=""></label>
+  <label>Nombre de codes (1 à 500) <input id="count" type="number" min="1" max="500" value="100"></label>
+  <label>Adresse publique du site <input id="base" value="https://sos-tag-ph.pages.dev"></label>
+  <button id="gen">Créer le lot</button>
+  <p class="note">Les codes sont créés en statut « unclaimed » (non activés).</p>
+  <div id="result" hidden>
+    <p id="count-out"></p>
+    <button id="csv">Télécharger le CSV (code, URL)</button>
+  </div>
+
+  <h2>2. Voir un lot</h2>
+  <label>Nom du lot <input id="viewBatch"></label>
+  <button id="view" class="ghost">Afficher</button>
+  <div id="stats"></div>
+  <table id="rows" hidden><thead><tr><th>Code</th><th>Statut</th></tr></thead><tbody></tbody></table>
+</section>
+</main>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-functions.js";
+
+// Même configuration que app.html (projet sos-tag-ph).
+const app = initializeApp({
+  apiKey: "COLLER_ICI",
+  authDomain: "sos-tag-ph.firebaseapp.com",
+  projectId: "sos-tag-ph",
+  storageBucket: "sos-tag-ph.firebasestorage.app",
+  messagingSenderId: "COLLER_ICI",
+  appId: "COLLER_ICI"
+});
+const auth = getAuth(app), db = getFirestore(app), fn = getFunctions(app, "asia-southeast1");
+const $ = (id) => document.getElementById(id);
+const msg = (t) => ($("msg").textContent = t);
+let lastCodes = [];
+
+const d = new Date();
+$("batchName").value = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+
+$("in").onclick = () => signInWithEmailAndPassword(auth, $("email").value, $("pass").value).catch((e) => msg(e.message));
+$("out").onclick = () => signOut(auth);
+
+onAuthStateChanged(auth, async (u) => {
+  $("login").hidden = !!u;
+  $("panel").hidden = true;
+  if (!u) return msg("Connexion requise.");
+  const t = await u.getIdTokenResult(true);
+  if (t.claims.admin !== true) {
+    msg("Accès refusé : ce compte n'est pas administrateur.");
+    return;
+  }
+  msg("");
+  $("panel").hidden = false;
+});
+
+$("gen").onclick = async () => {
+  const count = Number($("count").value);
+  const batch = $("batchName").value.trim();
+  if (!batch || !(count >= 1 && count <= 500)) return msg("Nom de lot requis, et un nombre entre 1 et 500.");
+  msg("Création du lot en cours…");
+  try {
+    const r = await httpsCallable(fn, "generateBatch")({ count, batch });
+    lastCodes = r.data.codes;
+    $("count-out").textContent = `${lastCodes.length} codes créés dans le lot « ${batch} ».`;
+    $("result").hidden = false;
+    msg("Lot créé.");
+  } catch (e) { msg(e.message); }
+};
+
+$("csv").onclick = () => {
+  const base = $("base").value.trim().replace(/\/$/, "");
+  const rows = ["code,url", ...lastCodes.map((c) => `${c},${base}/s/${c}`)];
+  const blob = new Blob([rows.join("\n")], { type: "text/csv" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `lot-${$("batchName").value.trim()}.csv`;
+  a.click();
+};
+
+$("view").onclick = async () => {
+  const batch = $("viewBatch").value.trim();
+  if (!batch) return msg("Entre le nom du lot.");
+  try {
+    const snap = await getDocs(query(collection(db, "stickers"), where("batch", "==", batch)));
+    const counts = {};
+    const tbody = $("rows").querySelector("tbody");
+    tbody.replaceChildren();
+    snap.forEach((doc) => {
+      const s = doc.data().status || "?";
+      counts[s] = (counts[s] || 0) + 1;
+      const tr = document.createElement("tr");
+      const a = document.createElement("td"); a.textContent = doc.id;
+      const b = document.createElement("td"); b.textContent = s;
+      tr.append(a, b); tbody.append(tr);
+    });
+    $("stats").textContent = snap.empty ? "Aucun code dans ce lot." :
+      `Total : ${snap.size}. ` + Object.entries(counts).map(([k, v]) => `${k} : ${v}`).join(", ");
+    $("rows").hidden = snap.empty;
+    msg("");
+  } catch (e) { msg(e.message); }
+};
+</script>
+<script>if ("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js");</script>
+</body>
+</html>
