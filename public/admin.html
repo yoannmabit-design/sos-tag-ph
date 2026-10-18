@@ -37,6 +37,7 @@ td,th{text-align:left;padding:6px;border-bottom:1px solid var(--line);font-famil
   <label>Email <input id="email" type="email" autocomplete="email"></label>
   <label>Mot de passe <input id="pass" type="password" autocomplete="current-password"></label>
   <button id="in">Se connecter</button>
+  <button id="reset" class="ghost" type="button">Mot de passe oublié ?</button>
 </section>
 
 <section id="panel" hidden>
@@ -63,7 +64,7 @@ td,th{text-align:left;padding:6px;border-bottom:1px solid var(--line);font-famil
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, sendPasswordResetEmail, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-functions.js";
 
@@ -86,6 +87,13 @@ $("batchName").value = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2
 
 $("in").onclick = () => signInWithEmailAndPassword(auth, $("email").value, $("pass").value).catch((e) => msg(e.message));
 $("out").onclick = () => signOut(auth);
+$("reset").onclick = () => {
+  const email = $("email").value.trim();
+  if (!email) return msg("Entre ton adresse e-mail, puis clique sur « Mot de passe oublié ».");
+  sendPasswordResetEmail(auth, email)
+    .then(() => msg("Si ce compte existe, un e-mail de réinitialisation vient d'être envoyé. Pense à vérifier les spams."))
+    .catch((e) => msg(e.message));
+};
 
 onAuthStateChanged(auth, async (u) => {
   $("login").hidden = !!u;
