@@ -33,6 +33,8 @@ li{padding:8px 0;border-top:1px solid var(--line);list-style:none}ul{padding:0}
   <label>Email <input id="email" type="email" autocomplete="email"></label>
   <label>Password (8+ characters) <input id="pass" type="password" autocomplete="current-password"></label>
   <button id="in">Sign in</button><button id="up" class="ghost">Create account</button>
+  <button id="google" class="ghost" type="button">Continuer avec Google</button>
+  <button id="reset" class="ghost" type="button">Mot de passe oublié ?</button>
 </section>
 <section id="main" hidden>
   <p class="hint">Anyone who scans your tag sees what you fill in below. Leave a field empty to hide it.</p>
@@ -71,7 +73,7 @@ li{padding:8px 0;border-top:1px solid var(--line);list-style:none}ul{padding:0}
 </main>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, sendPasswordResetEmail, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-functions.js";
 
@@ -94,6 +96,17 @@ $("code").value = (new URLSearchParams(location.search).get("code") || "").toUpp
 $("in").onclick = () => signInWithEmailAndPassword(auth, $("email").value, $("pass").value).catch((e) => msg(e.message));
 $("up").onclick = () => createUserWithEmailAndPassword(auth, $("email").value, $("pass").value).catch((e) => msg(e.message));
 $("out").onclick = () => signOut(auth);
+$("google").onclick = () => {
+  const provider = new GoogleAuthProvider();
+  signInWithPopup(auth, provider).catch((e) => msg(e.message));
+};
+$("reset").onclick = () => {
+  const email = $("email").value.trim();
+  if (!email) return msg("Entre ton adresse e-mail, puis clique sur « Mot de passe oublié ».");
+  sendPasswordResetEmail(auth, email)
+    .then(() => msg("Si ce compte existe, un e-mail de réinitialisation vient d'être envoyé. Pense à vérifier les spams."))
+    .catch((e) => msg(e.message));
+};
 function toggleOther() { $("insurerOtherWrap").hidden = $("insurer").value !== "Other"; }
 $("insurer").onchange = toggleOther;
 $("del").onclick = async () => {
