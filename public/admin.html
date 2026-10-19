@@ -190,12 +190,24 @@ td code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.95rem}
       <div class="stats" id="stats"></div>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Code</th><th>Status</th></tr></thead>
+          <thead><tr><th>Code</th><th>Status</th><th>Valid until</th></tr></thead>
           <tbody id="rows"></tbody>
         </table>
       </div>
     </div>
     <p class="empty" id="viewEmpty" hidden>No codes in this batch.</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="step">3</span> Extend a tag</h2>
+    <p class="hint">Each tag is valid for 1 year from activation. After a payment, add one more year. If the tag already expired, the year counts from today.</p>
+    <div class="row">
+      <label style="flex:1"><span class="l">Tag code</span><input id="extCode" maxlength="12" autocapitalize="characters" autocomplete="off"></label>
+    </div>
+    <div class="actions">
+      <button id="extend" type="button">Add 1 year</button>
+    </div>
+    <p id="extMsg" class="hint" style="margin:12px 0 0;font-weight:600"></p>
   </div>
 
   <div class="actions" style="justify-content:center;margin-top:18px">
@@ -361,6 +373,21 @@ $("csv").onclick = () => {
   a.click();
 };
 
+/* ---------- extend a tag by one year ---------- */
+$("extend").onclick = async () => {
+  const code = $("extCode").value.trim().toUpperCase();
+  if (!/^[2-9A-HJKMNP-Z]{12}$/.test(code)) return toast("Enter the 12-character tag code.", "err");
+  const b = $("extend"); busy(b, true, "Extending…");
+  try {
+    const r = await httpsCallable(fn, "extendTag")({ code });
+    const when = new Date(r.data.validUntil).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+    $("extMsg").textContent = "Done. " + code + " is now valid until " + when + ".";
+    $("extMsg").style.color = "var(--green)";
+    toast("Tag extended.");
+  } catch (err) { $("extMsg").textContent = ""; toast(err.message, "err"); }
+  busy(b, false);
+};
+
 /* ---------- view a batch ---------- */
 $("view").onclick = async () => {
   const batch = $("viewBatch").value.trim();
@@ -376,7 +403,9 @@ $("view").onclick = async () => {
       const a = document.createElement("td"), s = document.createElement("td");
       const code = document.createElement("code"); code.textContent = c.code; a.append(code);
       const pill = document.createElement("span"); pill.className = "pill " + c.status; pill.textContent = c.status; s.append(pill);
-      tr.append(a, s); tbody.append(tr);
+      const vtd = document.createElement("td");
+      vtd.textContent = c.validUntil ? new Date(c.validUntil).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : "—";
+      tr.append(a, s, vtd); tbody.append(tr);
     });
     const stats = $("stats");
     stats.replaceChildren();
