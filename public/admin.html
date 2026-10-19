@@ -367,23 +367,20 @@ $("view").onclick = async () => {
   if (!batch) return toast("Enter a batch name.", "err");
   const b = $("view"); busy(b, true, "Loading…");
   try {
-    const snap = await getDocs(query(collection(db, "stickers"), where("batch", "==", batch)));
-    const counts = { active: 0, unclaimed: 0, blocked: 0 };
+    const res = await httpsCallable(fn, "listBatch")({ batch });
+    const { codes, counts, total } = res.data;
+    viewedCodes = codes.map((c) => c.code);
     const tbody = $("rows"); tbody.replaceChildren();
-    viewedCodes = [];
-    snap.forEach((doc) => {
-      viewedCodes.push(doc.id);
-      const s = doc.data().status || "unknown";
-      counts[s] = (counts[s] || 0) + 1;
+    codes.forEach((c) => {
       const tr = document.createElement("tr");
-      const a = document.createElement("td"), c = document.createElement("td");
-      const code = document.createElement("code"); code.textContent = doc.id; a.append(code);
-      const pill = document.createElement("span"); pill.className = "pill " + s; pill.textContent = s; c.append(pill);
-      tr.append(a, c); tbody.append(tr);
+      const a = document.createElement("td"), s = document.createElement("td");
+      const code = document.createElement("code"); code.textContent = c.code; a.append(code);
+      const pill = document.createElement("span"); pill.className = "pill " + c.status; pill.textContent = c.status; s.append(pill);
+      tr.append(a, s); tbody.append(tr);
     });
     const stats = $("stats");
     stats.replaceChildren();
-    const cards = [["total", "Total", snap.size], ["active", "Active", counts.active], ["unclaimed", "Unclaimed", counts.unclaimed], ["blocked", "Blocked", counts.blocked]];
+    const cards = [["total", "Total", total], ["active", "Active", counts.active || 0], ["unclaimed", "Unclaimed", counts.unclaimed || 0], ["blocked", "Blocked", counts.blocked || 0]];
     cards.forEach(([cls, label, n]) => {
       const box = document.createElement("div"); box.className = "stat " + cls;
       const big = document.createElement("b"); big.textContent = "0";
@@ -391,10 +388,11 @@ $("view").onclick = async () => {
       box.append(big, sp); stats.append(box);
       countUp(big, n);
     });
+    const snap = { empty: total === 0 };
     $("viewBox").hidden = snap.empty;
     $("viewEmpty").hidden = !snap.empty;
     $("printView").hidden = snap.empty;
-    if (!snap.empty) toast(`${snap.size} codes loaded.`);
+    if (!snap.empty) toast(`${total} codes loaded.`);
   } catch (err) { toast(err.message, "err"); }
   busy(b, false);
 };
