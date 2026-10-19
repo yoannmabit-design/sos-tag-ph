@@ -160,6 +160,9 @@ td code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.95rem}
       <label><span class="l">Batch name</span><input id="batchName"></label>
       <label><span class="l">Number of codes (1 to 500)</span><input id="count" type="number" min="1" max="500" value="100"></label>
     </div>
+    <label><span class="l">Validity included, counted from activation</span>
+      <select id="termYears"><option value="1">1 year (1-year kit, family kit)</option><option value="2">2 years (2-year kit)</option></select>
+    </label>
     <label><span class="l">Public site address</span><input id="base" value="https://sos-tag.life"></label>
     <div class="actions">
       <button id="gen" type="button">Create batch</button>
@@ -200,12 +203,13 @@ td code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.95rem}
 
   <div class="card">
     <h2><span class="step">3</span> Extend a tag</h2>
-    <p class="hint">Each tag is valid for 1 year from activation. After a payment, add one more year. If the tag already expired, the year counts from today.</p>
+    <p class="hint">After a payment, add 1 or 2 years. The time is added to the current end date. If the tag already expired, it counts from today.</p>
     <div class="row">
-      <label style="flex:1"><span class="l">Tag code</span><input id="extCode" maxlength="12" autocapitalize="characters" autocomplete="off"></label>
+      <label><span class="l">Tag code</span><input id="extCode" maxlength="12" autocapitalize="characters" autocomplete="off"></label>
+      <label><span class="l">Renewal</span><select id="extYears"><option value="1">1 year</option><option value="2">2 years</option></select></label>
     </div>
     <div class="actions">
-      <button id="extend" type="button">Add 1 year</button>
+      <button id="extend" type="button">Extend tag</button>
     </div>
     <p id="extMsg" class="hint" style="margin:12px 0 0;font-weight:600"></p>
   </div>
@@ -317,9 +321,9 @@ $("gen").onclick = async (e) => {
   busy(b, true, "Creating…");
   bar.classList.add("on", "indeterminate");
   try {
-    const r = await httpsCallable(fn, "generateBatch")({ count, batch });
+    const r = await httpsCallable(fn, "generateBatch")({ count, batch, termYears: Number($("termYears").value) });
     lastCodes = r.data.codes;
-    $("resultBanner").textContent = `${lastCodes.length} codes created in batch “${batch}”.`;
+    $("resultBanner").textContent = `${lastCodes.length} codes created in batch “${batch}” (${$("termYears").value} year validity from activation).`;
     const res = $("result"); res.hidden = false;
     res.style.animation = "none"; void res.offsetWidth; res.style.animation = "";
     toast("Batch created.");
@@ -379,7 +383,7 @@ $("extend").onclick = async () => {
   if (!/^[2-9A-HJKMNP-Z]{12}$/.test(code)) return toast("Enter the 12-character tag code.", "err");
   const b = $("extend"); busy(b, true, "Extending…");
   try {
-    const r = await httpsCallable(fn, "extendTag")({ code });
+    const r = await httpsCallable(fn, "extendTag")({ code, years: Number($("extYears").value) });
     const when = new Date(r.data.validUntil).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
     $("extMsg").textContent = "Done. " + code + " is now valid until " + when + ".";
     $("extMsg").style.color = "var(--green)";
