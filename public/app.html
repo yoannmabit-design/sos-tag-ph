@@ -222,6 +222,12 @@ button.is-busy::before{content:"";width:16px;height:16px;border:2px solid curren
     <div id="tags"></div>
   </div>
 
+  <div class="card">
+    <h2>Access log</h2>
+    <p class="hint">Every time someone scans your tag and opens your details, it is recorded here, with the time and whether they shared their location.</p>
+    <div id="scanlog"></div>
+  </div>
+
   <div class="card danger">
     <h2>Danger zone</h2>
     <p class="hint">Deleting your account removes your profile, scan and location history. Your stickers are unlinked and cannot be recovered.</p>
@@ -343,7 +349,7 @@ onAuthStateChanged(auth, async (u) => {
   $("showInsurer").checked = !!p.showInsurer;
   toggleOther();
   saved = true; setSaveState("saved");
-  listTags(u);
+  listTags(u); listScans(u);
 });
 
 /* ---------- save profile (only this button saves the information) ---------- */
@@ -395,6 +401,33 @@ $("del").onclick = async () => {
     flash($("msg"), "Your account and data were deleted.", "ok");
   } catch (err) { flash($("msg"), err.message); busy(b, false); }
 };
+
+/* ---------- access log ---------- */
+async function listScans(u) {
+  const box = $("scanlog"); if (!box) return;
+  try {
+    const [sc, lc] = await Promise.all([
+      getDocs(query(collection(db, "scans"), where("ownerUid", "==", u.uid))),
+      getDocs(query(collection(db, "locations"), where("ownerUid", "==", u.uid)))
+    ]);
+    const ms = (d) => (d.data().ts && d.data().ts.toMillis) ? d.data().ts.toMillis() : 0;
+    const locs = lc.docs.map((d) => ({ code: d.data().code, t: ms(d) }));
+    const rows = sc.docs.map((d) => ({ code: d.data().code, t: ms(d) })).sort((a, b) => b.t - a.t);
+    box.replaceChildren();
+    if (!rows.length) { const p = document.createElement("p"); p.className = "hint"; p.textContent = "No scans yet. Nobody has opened your details."; box.append(p); return; }
+    rows.slice(0, 20).forEach((r) => {
+      const row = document.createElement("div"); row.className = "tag";
+      const left = document.createElement("div");
+      const when = document.createElement("div"); when.style.fontWeight = "600";
+      when.textContent = r.t ? new Date(r.t).toLocaleString("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "Unknown time";
+      const sub = document.createElement("div"); sub.className = "hint"; sub.style.margin = "2px 0 0";
+      const shared = locs.some((l) => l.code === r.code && Math.abs(l.t - r.t) < 10 * 60 * 1000);
+      sub.textContent = "Tag " + r.code + (shared ? " · location shared" : "");
+      left.append(when, sub); row.append(left); box.append(row);
+    });
+    if (rows.length > 20) { const p = document.createElement("p"); p.className = "hint"; p.textContent = "Showing the 20 most recent of " + rows.length + " scans."; box.append(p); }
+  } catch (err) { box.textContent = "The log could not be loaded."; }
+}
 
 /* ---------- tags list ---------- */
 async function listTags(u) {
