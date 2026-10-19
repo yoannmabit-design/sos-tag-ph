@@ -147,6 +147,8 @@ function shareLocation(box) {
         if (d.status === "sent") {
           setStatus(box, "ok", `Location sent to ${d.sent} contact(s). Accuracy about ${Math.round(accuracy)} m.`);
           box.append(el("br"), Object.assign(el("a", 0, "Open the location on a map →"), { href: map, target: "_blank", rel: "noopener" }));
+        } else if (d.status === "expired") {
+          setStatus(box, "fail", "This tag has expired, so no location alert was sent. Call 911 and give the address or a landmark.");
         } else if (d.status === "throttled") {
           setStatus(box, "ok", "A location was already sent a moment ago.");
         } else {
@@ -165,6 +167,7 @@ fetch(`${API}?code=${encodeURIComponent(code)}`)
   .then((r) => r.json())
   .then((d) => {
     if (d.status === "invalid") return center("Unknown tag", "This code is not registered.");
+    if (d.status === "expired") return center("Tag expired", "This tag's subscription has ended, so its information is no longer available. Call 911 if someone needs help.");
     if (d.status === "blocked") return center("Tag deactivated", "The owner marked this tag as lost. Call 911 if someone needs help.");
     if (d.status === "unclaimed") {
       center("This tag is not activated yet", "If it is yours, activate it to add your emergency details.");
@@ -183,6 +186,12 @@ fetch(`${API}?code=${encodeURIComponent(code)}`)
     if (p.blood) { const c = el("div", "chip blood"); c.append(el("span", 0, "Blood type"), el("b", 0, p.blood)); chips.append(c); }
     if (chips.children.length) id.append(chips);
     m.append(id);
+
+    if (d.status === "grace") {
+      const n = el("div", "alert", "Limited information: this tag's subscription has expired. Only the name and emergency contacts are shown.");
+      n.style.animation = "none";
+      m.append(n);
+    }
 
     /* Allergies: highest visibility */
     if (p.allergies) {
