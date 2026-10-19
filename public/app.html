@@ -407,6 +407,17 @@ async function listTags(u) {
     const code = document.createElement("code"); code.textContent = d.id;
     const pill = document.createElement("span"); pill.className = "pill " + s.status; pill.textContent = s.status;
     left.append(code, pill);
+    const vu = s.validUntil ? s.validUntil.toDate() : null;
+    if (vu) {
+      const fmt = (x) => x.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+      const days = Math.ceil((vu - Date.now()) / 86400000);
+      const note = document.createElement("div");
+      note.className = "hint"; note.style.margin = "4px 0 0";
+      if (days >= 0) note.textContent = "Valid until " + fmt(vu) + (days <= 30 ? " (" + days + " day" + (days === 1 ? "" : "s") + " left)" : "");
+      else note.textContent = "Expired on " + fmt(vu) + (days >= -30 ? ". Responders see limited information." : ".");
+      if (days <= 30) note.style.color = "var(--red)";
+      left.append(note);
+    }
     b.className = "outline small";
     b.textContent = s.status === "active" ? "Mark as lost" : "Reactivate";
     b.onclick = async () => {
