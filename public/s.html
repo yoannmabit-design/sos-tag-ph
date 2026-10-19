@@ -10,39 +10,129 @@
 <meta name="theme-color" content="#c8102e">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="SOS Tag">
-<title>Emergency information</title>
+<title>SOS Tag · Emergency information</title>
 <style>
-:root{--ink:#101820;--red:#c8102e;--amber:#ffc72c;--line:#d9dde1}
+:root{
+  --red:#c8102e;--red-dark:#9e0c24;--green:#17803d;--amber:#ffc72c;
+  --ink:#14181f;--muted:#5f6772;--bg:#f5f6f8;--card:#ffffff;--line:#e3e6ea;--field:#f9fafb;--ring:rgba(200,16,46,.18);
+  --radius:14px;--ease:cubic-bezier(.2,.7,.2,1);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ink:#eef1f5;--muted:#9aa3ae;--bg:#0f1218;--card:#181c24;--line:#2a303b;--field:#11151c;--ring:rgba(255,90,110,.25);
+  }
+}
+:root[data-theme="dark"]{
+  --ink:#eef1f5;--muted:#9aa3ae;--bg:#0f1218;--card:#181c24;--line:#2a303b;--field:#11151c;--ring:rgba(255,90,110,.25);
+}
 *{box-sizing:border-box}
-body{margin:0;font:18px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:#fff}
-header{background:var(--red);color:#fff;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;gap:12px}
-.sos{background:#fff;color:var(--red);font-weight:800;padding:12px 18px;border-radius:8px;text-decoration:none}
-main{max-width:640px;margin:0 auto;padding:20px 18px 48px}
-h1{font-size:2.4rem;line-height:1.1;margin:.2em 0 .5em}
-.alert{background:var(--amber);padding:14px 16px;border-radius:8px;font-weight:700;margin:0 0 18px}
-.note{color:#4a5560;font-size:.95rem;margin:18px 0 0}
-.status{font-weight:700;margin:18px 0 0}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh}
+
+/* Header */
+header{background:linear-gradient(135deg,var(--red),var(--red-dark) 120%);color:#fff;padding:14px 16px 22px;position:relative;overflow:hidden}
+header::after{content:"";position:absolute;right:-60px;top:-70px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.08);animation:float 9s ease-in-out infinite}
+header .inner{max-width:620px;margin:0 auto;display:flex;align-items:center;gap:12px;position:relative;z-index:1}
+header img{width:34px;height:34px;border-radius:9px;background:#fff;padding:3px}
+header .title{flex:1;min-width:0;font-weight:800;font-size:1.02rem;letter-spacing:.2px}
+header .title small{display:block;font-weight:500;opacity:.85;font-size:.82rem}
+.sos{background:#fff;color:var(--red);font-weight:800;padding:10px 16px;border-radius:10px;text-decoration:none;white-space:nowrap;transition:transform .12s var(--ease), box-shadow .25s var(--ease);box-shadow:0 4px 12px -4px rgba(0,0,0,.3)}
+.sos:hover{transform:translateY(-1px);box-shadow:0 8px 18px -6px rgba(0,0,0,.35)}
+.sos:active{transform:scale(.97)}
+
+main{max-width:620px;margin:-14px auto 0;padding:0 14px 48px;position:relative;z-index:1}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin-bottom:12px;box-shadow:0 1px 2px rgba(0,0,0,.04);animation:fadeUp .45s var(--ease) both}
+.card:nth-child(2){animation-delay:.05s}.card:nth-child(3){animation-delay:.1s}.card:nth-child(4){animation-delay:.15s}
+
+/* Identity */
+.name{font-size:2.1rem;line-height:1.1;font-weight:800;margin:.1em 0 .35em;letter-spacing:-.01em}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.chip{display:inline-flex;flex-direction:column;align-items:flex-start;min-width:110px;padding:10px 14px;border-radius:12px;background:var(--field);border:1px solid var(--line)}
+.chip span{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700}
+.chip b{font-size:1.25rem;font-weight:800;font-variant-numeric:tabular-nums}
+.chip.blood{background:var(--red);border-color:var(--red);color:#fff}
+.chip.blood span{color:rgba(255,255,255,.85)}
+
+/* Alerts */
+.alert{display:flex;gap:12px;align-items:flex-start;background:var(--amber);color:#2a1f00;padding:14px 16px;border-radius:12px;font-weight:700;margin:0 0 12px;animation:pulseSoft 2.4s var(--ease) infinite}
+.alert::before{content:"!";flex:0 0 auto;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#2a1f00;color:var(--amber);font-weight:900}
+.alert small{display:block;font-weight:600;opacity:.85}
+
+/* Sections */
+h2{font-size:.74rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 10px;font-weight:700}
 dl{margin:0}
-dt{font-weight:700;margin-top:18px;padding-top:14px;border-top:1px solid var(--line)}
-dd{margin:4px 0 0;white-space:pre-wrap}
-.call{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:12px;padding:16px;border:2px solid var(--ink);border-radius:8px;color:var(--ink);text-decoration:none;font-weight:700}
-.call span{font-weight:400}
+.item{padding:12px 0;border-top:1px solid var(--line)}
+.item:first-of-type{border-top:0;padding-top:0}
+.item dt{font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}
+.item dd{margin:3px 0 0;white-space:pre-wrap;font-size:1.02rem}
+
+/* Contacts (big tap targets) */
+.call{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:10px;padding:16px 18px;border-radius:var(--radius);background:var(--ink);color:var(--bg);text-decoration:none;font-weight:700;position:relative;overflow:hidden;transition:transform .12s var(--ease), box-shadow .25s var(--ease)}
+.call::after{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.18) 50%,transparent 70%);transform:translateX(-100%);transition:transform .6s var(--ease)}
+.call:hover{box-shadow:0 10px 24px -12px rgba(0,0,0,.5);transform:translateY(-1px)}
+.call:hover::after{transform:translateX(100%)}
+.call:active{transform:scale(.98)}
+.call span{font-weight:500;opacity:.9;font-variant-numeric:tabular-nums}
+.call .ico{display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:var(--red);color:#fff;flex:0 0 auto;font-size:1rem}
+
+/* Location status */
+.status{display:flex;align-items:center;gap:12px;font-weight:600;padding:14px 16px;border-radius:12px;background:var(--field);border:1px solid var(--line);margin-top:12px}
+.status .dot{width:12px;height:12px;border-radius:50%;background:var(--muted);flex:0 0 auto}
+.status.pending .dot{background:var(--amber);animation:ping 1.4s var(--ease) infinite}
+.status.ok{border-color:#b7e2c6;background:rgba(23,128,61,.07);color:var(--green)}
+.status.ok .dot{background:var(--green)}
+.status.fail{border-color:#f2b8c1;background:rgba(200,16,46,.06);color:var(--red)}
+.status.fail .dot{background:var(--red)}
+.status a{color:inherit;font-weight:800}
+.note{color:var(--muted);font-size:.9rem;margin:12px 2px 0}
+
+/* Loading / plain states */
+.center{text-align:center;padding:40px 10px}
+.center h1{font-size:1.6rem;margin:.2em 0 .3em}
+.center p{color:var(--muted);margin:0 0 14px}
+.loader{width:34px;height:34px;margin:0 auto 14px;border:3px solid var(--line);border-top-color:var(--red);border-radius:50%;animation:spin .8s linear infinite}
+.tagbtn{display:inline-flex;justify-content:center;padding:14px 20px;border-radius:12px;background:var(--red);color:#fff;text-decoration:none;font-weight:800;transition:transform .12s var(--ease), background-color .25s;}
+.tagbtn:hover{background:var(--red-dark)}
+.tagbtn:active{transform:scale(.97)}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(10px)}}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(255,199,44,.6)}100%{box-shadow:0 0 0 12px rgba(255,199,44,0)}}
+@keyframes pulseSoft{0%,100%{box-shadow:0 0 0 0 rgba(255,199,44,.5)}50%{box-shadow:0 0 0 8px rgba(255,199,44,0)}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
-<header><img src="/icon.svg" alt="" width="28" height="28" style="vertical-align:middle;margin-right:10px"><strong>Emergency information</strong><a class="sos" href="tel:911">Call 911</a></header>
-<main><p>Loading…</p></main>
+<header>
+  <div class="inner">
+    <img src="/icon.svg" alt="">
+    <div class="title">Emergency information<small>SOS Tag</small></div>
+    <a class="sos" href="tel:911">Call 911</a>
+  </div>
+</header>
+
+<main id="main">
+  <div class="center">
+    <div class="loader" aria-hidden="true"></div>
+    <p>Loading…</p>
+  </div>
+</main>
+
 <script>
 const API = "https://asia-southeast1-sos-tag-ph.cloudfunctions.net/scan";
 const REPORT = "https://asia-southeast1-sos-tag-ph.cloudfunctions.net/reportLocation";
 const code = ((new URLSearchParams(location.search).get("code")) || (location.pathname.match(/[2-9A-HJKMNP-Z]{12}/i) || [""])[0]).toUpperCase();
-const m = document.querySelector("main");
+const m = document.getElementById("main");
 const el = (t, c, x) => { const n = document.createElement(t); if (c) n.className = c; if (x != null) n.textContent = x; return n; };
-const say = (h, p) => m.replaceChildren(el("h1", 0, h), el("p", 0, p));
+const center = (h, p) => { const wrap = el("div", "center"); wrap.append(el("h1", 0, h), el("p", 0, p)); m.replaceChildren(wrap); };
+const fmtDate = (iso) => new Date(iso + "T00:00:00").toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+
+function setStatus(box, cls, text) { box.className = "status " + cls; box.replaceChildren(el("span", "dot"), document.createTextNode(text)); }
 
 function shareLocation(box) {
-  if (!navigator.geolocation) { box.textContent = "Location is not available on this phone. Call 911 and give the address or a landmark."; return; }
-  box.textContent = "Waiting for location permission…";
+  if (!navigator.geolocation) { setStatus(box, "fail", "Location is not available on this phone. Call 911 and give the address or a landmark."); return; }
+  setStatus(box, "pending", "Waiting for location permission…");
   navigator.geolocation.getCurrentPosition(
     async (pos) => {
       const { latitude: lat, longitude: lng, accuracy } = pos.coords;
@@ -55,18 +145,18 @@ function shareLocation(box) {
         });
         const d = await r.json();
         if (d.status === "sent") {
-          box.textContent = `Location sent to ${d.sent} contact(s). Accuracy about ${Math.round(accuracy)} m.`;
-          box.append(el("br"), Object.assign(el("a", 0, "Open the location on a map"), { href: map, target: "_blank", rel: "noopener" }));
+          setStatus(box, "ok", `Location sent to ${d.sent} contact(s). Accuracy about ${Math.round(accuracy)} m.`);
+          box.append(el("br"), Object.assign(el("a", 0, "Open the location on a map →"), { href: map, target: "_blank", rel: "noopener" }));
         } else if (d.status === "throttled") {
-          box.textContent = "A location was already sent a moment ago.";
+          setStatus(box, "ok", "A location was already sent a moment ago.");
         } else {
-          box.textContent = "The location could not be sent. Call 911 and give the address or a landmark.";
+          setStatus(box, "fail", "The location could not be sent. Call 911 and give the address or a landmark.");
         }
       } catch {
-        box.textContent = "The location could not be sent. Check the connection, and call 911.";
+        setStatus(box, "fail", "The location could not be sent. Check the connection, and call 911.");
       }
     },
-    () => { box.textContent = "Location not shared. Call 911 and give the address or a landmark."; },
+    () => setStatus(box, "fail", "Location not shared. Call 911 and give the address or a landmark."),
     { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
   );
 }
@@ -74,32 +164,75 @@ function shareLocation(box) {
 fetch(`${API}?code=${encodeURIComponent(code)}`)
   .then((r) => r.json())
   .then((d) => {
-    if (d.status === "invalid") return say("Unknown tag", "This code is not registered.");
-    if (d.status === "blocked") return say("Tag deactivated", "The owner marked this tag as lost. Call 911 if someone needs help.");
+    if (d.status === "invalid") return center("Unknown tag", "This code is not registered.");
+    if (d.status === "blocked") return center("Tag deactivated", "The owner marked this tag as lost. Call 911 if someone needs help.");
     if (d.status === "unclaimed") {
-      say("This tag is not activated yet", "If it is yours, activate it to add your emergency details.");
-      const a = el("a", "call", "Activate this tag"); a.href = `/app.html?code=${encodeURIComponent(code)}`;
-      return m.append(a);
+      center("This tag is not activated yet", "If it is yours, activate it to add your emergency details.");
+      const a = el("a", "tagbtn", "Activate this tag"); a.href = `/app.html?code=${encodeURIComponent(code)}`;
+      m.querySelector(".center").append(a);
+      return;
     }
     const p = d.profile;
-    m.replaceChildren(el("h1", 0, p.name || "Name not provided"));
-    if (p.allergies) m.append(el("p", "alert", "Allergies: " + p.allergies));
-    const dl = el("dl");
-    [["Blood type", p.blood], ["Medical conditions", p.conditions], ["Medications", p.meds], ["Notes", p.notes]]
-      .forEach(([k, v]) => { if (v) dl.append(el("dt", 0, k), el("dd", 0, v)); });
-    if (p.insurerNo) dl.append(el("dt", 0, "Health insurance"), el("dd", 0, (p.insurer ? p.insurer + ": " : "") + p.insurerNo));
-    m.append(dl);
-    (p.contacts || []).forEach((c) => {
-      const a = el("a", "call"); a.href = "tel:" + String(c.phone).replace(/[^+\d]/g, "");
-      a.append(el("b", 0, c.name || "Emergency contact"), el("span", 0, c.phone));
-      m.append(a);
-    });
-    m.append(el("p", "note", "Your location will be sent to this person's emergency contacts by text message."));
-    const status = el("p", "status", "Asking for your location…");
-    m.append(status);
+    m.replaceChildren();
+
+    /* Identity card: name, date of birth, blood type */
+    const id = el("section", "card");
+    id.append(el("h2", 0, "Patient"), el("div", "name", p.name || "Name not provided"));
+    const chips = el("div", "chips");
+    if (p.dob) { const c = el("div", "chip"); c.append(el("span", 0, "Date of birth"), el("b", 0, fmtDate(p.dob))); chips.append(c); }
+    if (p.blood) { const c = el("div", "chip blood"); c.append(el("span", 0, "Blood type"), el("b", 0, p.blood)); chips.append(c); }
+    if (chips.children.length) id.append(chips);
+    m.append(id);
+
+    /* Allergies: highest visibility */
+    if (p.allergies) {
+      const a = el("div", "alert");
+      const t = el("div"); t.append(document.createTextNode("Allergies: " + p.allergies));
+      a.append(t); m.append(a);
+    }
+
+    /* Medical details */
+    const details = [["Medical conditions", p.conditions], ["Medications", p.meds], ["Notes for responders", p.notes]].filter(([, v]) => v);
+    const insurance = p.insurerNo ? [["Health insurance", (p.insurer ? p.insurer + ": " : "") + p.insurerNo]] : [];
+    if (details.length || insurance.length) {
+      const card = el("section", "card");
+      card.append(el("h2", 0, "Medical"));
+      const dl = el("dl");
+      [...details, ...insurance].forEach(([k, v]) => {
+        const item = el("div", "item");
+        item.append(el("dt", 0, k), el("dd", 0, v));
+        dl.append(item);
+      });
+      card.append(dl); m.append(card);
+    }
+
+    /* Emergency contacts */
+    const contacts = (p.contacts || []).filter((c) => c.phone);
+    if (contacts.length) {
+      const card = el("section", "card");
+      card.append(el("h2", 0, "Emergency contacts"));
+      contacts.forEach((c) => {
+        const a = el("a", "call");
+        a.href = "tel:" + String(c.phone).replace(/[^+\d]/g, "");
+        const left = el("div"); left.append(el("b", 0, c.name || "Emergency contact"));
+        const right = el("span", 0, c.phone);
+        const ico = el("span", "ico", "✆");
+        a.append(left, right, ico);
+        card.append(a);
+      });
+      m.append(card);
+    }
+
+    /* Location */
+    const loc = el("section", "card");
+    loc.append(el("h2", 0, "Location"));
+    loc.append(el("p", "note", "Your location will be sent to this person's emergency contacts by text message."));
+    const status = el("div", "status pending");
+    loc.append(status);
+    m.append(loc);
     shareLocation(status);
   })
-  .catch(() => say("Could not load", "Check the connection and reload. In an emergency, call 911."));
+  .catch(() => center("Could not load", "Check the connection and reload. In an emergency, call 911."));
 </script>
 <script>if ("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js");</script>
 </body>
