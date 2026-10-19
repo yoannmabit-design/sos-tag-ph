@@ -1,5 +1,5 @@
 // Version du cache : à changer (sos-tag-v2, v3...) à chaque mise à jour des pages.
-const CACHE = "sos-tag-v2";
+const CACHE = "sos-tag-v3";
 const SHELL = ["/app.html", "/s.html", "/admin.html", "/manifest.webmanifest", "/icon.svg", "/icon-192.png", "/icon-512.png"];
 
 self.addEventListener("install", (e) => {
