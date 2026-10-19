@@ -35,7 +35,7 @@ dd{margin:4px 0 0;white-space:pre-wrap}
 <script>
 const API = "https://asia-southeast1-sos-tag-ph.cloudfunctions.net/scan";
 const REPORT = "https://asia-southeast1-sos-tag-ph.cloudfunctions.net/reportLocation";
-const code = new URLSearchParams(location.search).get("code") || location.pathname.split("/").filter(Boolean).pop() || "";
+const code = ((new URLSearchParams(location.search).get("code")) || (location.pathname.match(/[2-9A-HJKMNP-Z]{12}/i) || [""])[0]).toUpperCase();
 const m = document.querySelector("main");
 const el = (t, c, x) => { const n = document.createElement(t); if (c) n.className = c; if (x != null) n.textContent = x; return n; };
 const say = (h, p) => m.replaceChildren(el("h1", 0, h), el("p", 0, p));
