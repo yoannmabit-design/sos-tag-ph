@@ -52,11 +52,13 @@ td,th{text-align:left;padding:6px;border-bottom:1px solid var(--line);font-famil
   <div id="result" hidden>
     <p id="count-out"></p>
     <button id="csv">Télécharger le CSV (code, URL)</button>
+    <button id="print" class="ghost">Imprimer les QR</button>
   </div>
 
   <h2>2. Voir un lot</h2>
   <label>Nom du lot <input id="viewBatch"></label>
   <button id="view" class="ghost">Afficher</button>
+  <button id="printView" class="ghost" hidden>Imprimer les QR de ce lot</button>
   <div id="stats"></div>
   <table id="rows" hidden><thead><tr><th>Code</th><th>Statut</th></tr></thead><tbody></tbody></table>
 </section>
@@ -70,17 +72,18 @@ import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/
 
 // Même configuration que app.html (projet sos-tag-ph).
 const app = initializeApp({
-  apiKey: "AIzaSyDM0QaPpVg6M3NWPhIU_xi95l1cmKw9Ovg",
+  apiKey: "COLLER_ICI",
   authDomain: "sos-tag-ph.firebaseapp.com",
   projectId: "sos-tag-ph",
   storageBucket: "sos-tag-ph.firebasestorage.app",
-  messagingSenderId: "141929757363",
-  appId: "1:141929757363:web:cfc64e41dc0a71c8ec4ec6"
+  messagingSenderId: "COLLER_ICI",
+  appId: "COLLER_ICI"
 });
 const auth = getAuth(app), db = getFirestore(app), fn = getFunctions(app, "asia-southeast1");
 const $ = (id) => document.getElementById(id);
 const msg = (t) => ($("msg").textContent = t);
 let lastCodes = [];
+let viewedCodes = [];
 
 const d = new Date();
 $("batchName").value = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
@@ -122,6 +125,44 @@ $("gen").onclick = async () => {
   } catch (e) { msg(e.message); }
 };
 
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+function printSheet(codes, batch) {
+  if (!codes.length) return msg("Aucun code à imprimer.");
+  const base = $("base").value.trim().replace(/\/$/, "");
+  const w = window.open("", "_blank");
+  if (!w) return msg("Autorise les fenêtres pop-up pour ce site, puis réessaie.");
+  const cells = codes.map((c) =>
+    `<div class="cell"><div class="qr" data-url="${esc(base)}/s/${esc(c)}"></div>` +
+    `<div class="code">${esc(c)}</div><div class="lot">SOS Tag · ${esc(batch)}</div></div>`
+  ).join("");
+  w.document.write(`<!doctype html><html lang="fr"><head><meta charset="utf-8">
+<title>Planche QR ${esc(batch)}</title>
+<style>
+@page { size: A4; margin: 10mm; }
+body { margin: 0; font-family: system-ui, sans-serif; }
+.sheet { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6mm; }
+.cell { border: 1px dashed #bbb; padding: 3mm; text-align: center; break-inside: avoid; }
+.qr { width: 30mm; height: 30mm; margin: 0 auto; }
+.qr img, .qr canvas { width: 30mm !important; height: 30mm !important; }
+.code { font: bold 10pt ui-monospace, Consolas, monospace; letter-spacing: 1px; margin-top: 2mm; }
+.lot { font-size: 7pt; color: #555; }
+@media print { .cell { border-color: transparent; } }
+</style></head><body>
+<div class="sheet">${cells}</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"><\/script>
+<script>
+document.querySelectorAll(".qr").forEach((el) => new QRCode(el, {
+  text: el.dataset.url, width: 113, height: 113, correctLevel: QRCode.CorrectLevel.H
+}));
+window.onload = () => setTimeout(() => window.print(), 400);
+<\/script></body></html>`);
+  w.document.close();
+}
+
+$("print").onclick = () => printSheet(lastCodes, $("batchName").value.trim());
+$("printView").onclick = () => printSheet(viewedCodes, $("viewBatch").value.trim());
+
 $("csv").onclick = () => {
   const base = $("base").value.trim().replace(/\/$/, "");
   const rows = ["code,url", ...lastCodes.map((c) => `${c},${base}/s/${c}`)];
@@ -140,7 +181,9 @@ $("view").onclick = async () => {
     const counts = {};
     const tbody = $("rows").querySelector("tbody");
     tbody.replaceChildren();
+    viewedCodes = [];
     snap.forEach((doc) => {
+      viewedCodes.push(doc.id);
       const s = doc.data().status || "?";
       counts[s] = (counts[s] || 0) + 1;
       const tr = document.createElement("tr");
@@ -151,6 +194,7 @@ $("view").onclick = async () => {
     $("stats").textContent = snap.empty ? "Aucun code dans ce lot." :
       `Total : ${snap.size}. ` + Object.entries(counts).map(([k, v]) => `${k} : ${v}`).join(", ");
     $("rows").hidden = snap.empty;
+    $("printView").hidden = snap.empty;
     msg("");
   } catch (e) { msg(e.message); }
 };
