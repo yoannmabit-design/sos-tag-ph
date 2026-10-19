@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="fr">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -10,59 +10,201 @@
 <meta name="theme-color" content="#c8102e">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="SOS Tag">
-<title>SOS Tag — administration</title>
+<title>SOS Tag · Administration</title>
 <style>
-:root{--ink:#101820;--red:#c8102e;--line:#d9dde1}
+:root{
+  --red:#c8102e;--red-dark:#9e0c24;--green:#17803d;--amber:#b7791f;
+  --ink:#14181f;--muted:#6b7480;--bg:#f5f6f8;--card:#ffffff;--line:#e3e6ea;--field:#f9fafb;--ring:rgba(200,16,46,.18);
+  --radius:14px;--ease:cubic-bezier(.2,.7,.2,1);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ink:#eef1f5;--muted:#9aa3ae;--bg:#0f1218;--card:#181c24;--line:#2a303b;--field:#11151c;--ring:rgba(255,90,110,.25);
+  }
+}
+:root[data-theme="dark"]{
+  --ink:#eef1f5;--muted:#9aa3ae;--bg:#0f1218;--card:#181c24;--line:#2a303b;--field:#11151c;--ring:rgba(255,90,110,.25);
+}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
-body{margin:0;font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink)}
-main{max-width:720px;margin:0 auto;padding:24px 18px 60px}
-h1{font-size:1.8rem;margin:0 0 .6em}h2{font-size:1.2rem;margin:1.8em 0 .5em}
-label{display:block;font-weight:600;margin-top:12px}
-input{width:100%;font:inherit;padding:9px;border:1.5px solid var(--ink);border-radius:6px;margin-top:4px}
-button{font:inherit;font-weight:700;padding:10px 16px;margin:14px 8px 0 0;border-radius:6px;border:2px solid var(--red);background:var(--red);color:#fff;cursor:pointer}
-button.ghost{background:#fff;color:var(--red)}
-#msg{font-weight:600;min-height:1.4em}
-table{width:100%;border-collapse:collapse;margin-top:10px}
-td,th{text-align:left;padding:6px;border-bottom:1px solid var(--line);font-family:ui-monospace,Consolas,monospace}
-.note{color:#4a5560;font-size:.95rem}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh}
+
+/* Header */
+header{background:linear-gradient(135deg,var(--red),var(--red-dark) 120%);color:#fff;padding:16px 18px 26px;position:relative;overflow:hidden}
+header::after{content:"";position:absolute;right:-60px;top:-60px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.08);animation:float 9s ease-in-out infinite}
+header .inner{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:12px;position:relative;z-index:1}
+header img{width:36px;height:36px;border-radius:9px;background:#fff;padding:3px}
+header .brand{flex:1;min-width:0}
+header h1{font-size:1.15rem;margin:0;font-weight:800}
+header p{margin:2px 0 0;opacity:.85;font-size:.88rem}
+header .who{font-size:.85rem;opacity:.9;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:40%}
+
+main{max-width:760px;margin:-14px auto 0;padding:0 16px 80px;position:relative;z-index:1}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-bottom:14px;box-shadow:0 1px 2px rgba(0,0,0,.04);animation:fadeUp .45s var(--ease) both}
+.card:nth-of-type(2){animation-delay:.05s}.card:nth-of-type(3){animation-delay:.1s}.card:nth-of-type(4){animation-delay:.15s}
+.card h2{font-size:.76rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 14px;font-weight:700;display:flex;align-items:center;gap:8px}
+.step{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--red);color:#fff;font-size:.75rem;letter-spacing:0}
+.hint{color:var(--muted);font-size:.92rem;margin:0 0 14px}
+label{display:block;font-weight:600;font-size:.93rem;margin:0 0 14px}
+label > span.l{display:block;margin-bottom:6px}
+input,select{width:100%;font:inherit;font-weight:400;color:var(--ink);background:var(--field);padding:11px 12px;border:1px solid var(--line);border-radius:10px;outline:none;transition:border-color .2s var(--ease), box-shadow .2s var(--ease), background-color .2s}
+input:focus,select:focus{border-color:var(--red);box-shadow:0 0 0 4px var(--ring);background:var(--card)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:520px){.row{grid-template-columns:1fr}}
+
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:4px 0 6px}
+@media (max-width:560px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat{background:var(--field);border:1px solid var(--line);border-radius:12px;padding:12px;transition:transform .2s var(--ease)}
+.stat:hover{transform:translateY(-2px)}
+.stat b{display:block;font-size:1.6rem;font-weight:800;line-height:1.1;font-variant-numeric:tabular-nums}
+.stat span{font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+.stat.total b{color:var(--ink)}.stat.active b{color:var(--green)}.stat.unclaimed b{color:var(--amber)}.stat.blocked b{color:var(--red)}
+
+/* Progress bar */
+.progress{height:6px;border-radius:99px;background:var(--line);overflow:hidden;margin:12px 0 4px;display:none}
+.progress.on{display:block}
+.progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--red),#ff5a6e);border-radius:99px;transition:width .4s var(--ease)}
+.progress.indeterminate i{width:40%;animation:slide 1.2s ease-in-out infinite}
+
+/* Buttons */
+button{font:inherit;font-weight:700;padding:11px 18px;border-radius:10px;border:1px solid var(--red);background:var(--red);color:#fff;cursor:pointer;position:relative;overflow:hidden;
+  transition:transform .12s var(--ease), background-color .25s var(--ease), border-color .25s var(--ease), color .25s var(--ease), box-shadow .25s var(--ease);
+  display:inline-flex;align-items:center;justify-content:center;gap:8px}
+button:hover{background:var(--red-dark);box-shadow:0 6px 16px -6px rgba(200,16,46,.6);transform:translateY(-1px)}
+button:active{transform:scale(.97)}
+button:focus-visible{outline:3px solid var(--ring);outline-offset:2px}
+button:disabled{cursor:progress;opacity:.8;transform:none;box-shadow:none}
+button.ghost{background:transparent;color:var(--red)}
+button.ghost:hover{background:var(--ring);box-shadow:none}
+button.outline{background:transparent;color:var(--ink);border-color:var(--line)}
+button.outline:hover{border-color:var(--ink);background:var(--field);box-shadow:none}
+button.link{background:transparent;color:var(--red);border-color:transparent;padding:10px 6px;font-weight:600}
+button.link:hover{background:transparent;text-decoration:underline;box-shadow:none;transform:none}
+button.is-busy::before{content:"";width:16px;height:16px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin .7s linear infinite}
+/* ripple */
+.ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.45);transform:scale(0);animation:ripple .6s var(--ease);pointer-events:none}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+.actions > button{flex:1 1 150px}
+
+/* Results */
+#result{animation:fadeUp .4s var(--ease) both}
+.banner{display:flex;align-items:center;gap:12px;padding:14px;border-radius:12px;background:rgba(23,128,61,.08);border:1px solid #b7e2c6;color:var(--green);font-weight:700;margin-bottom:12px}
+.banner::before{content:"✓";display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--green);color:#fff;animation:popIn .4s var(--ease) both}
+
+/* Table */
+.table-wrap{overflow-x:auto;margin-top:12px;border:1px solid var(--line);border-radius:12px}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);font-size:.92rem}
+th{font-size:.74rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);background:var(--field)}
+tbody tr{transition:background-color .2s}
+tbody tr:hover{background:var(--field)}
+tbody tr:last-child td{border-bottom:0}
+td code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.95rem}
+.pill{font-size:.76rem;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--field);border:1px solid var(--line);color:var(--muted);text-transform:capitalize}
+.pill.active{color:var(--green);border-color:#b7e2c6;background:rgba(23,128,61,.08)}
+.pill.unclaimed{color:var(--amber);border-color:#f0d9a8;background:rgba(183,121,31,.08)}
+.pill.blocked{color:var(--red);border-color:#f2b8c1;background:rgba(200,16,46,.07)}
+.empty{text-align:center;color:var(--muted);padding:26px 0}
+
+/* Login */
+#login{max-width:420px;margin:40px auto 0}
+#login .card{margin-bottom:0}
+.divider{display:flex;justify-content:center;margin:10px 0 0}
+
+/* Toast */
+#toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,160%);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:12px;font-weight:600;box-shadow:0 12px 30px -10px rgba(0,0,0,.4);transition:transform .4s var(--ease);max-width:92vw;z-index:50}
+#toast.show{transform:translate(-50%,0)}
+#toast.err{background:var(--red);color:#fff}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes popIn{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes ripple{to{transform:scale(4);opacity:0}}
+@keyframes slide{0%{transform:translateX(-100%)}100%{transform:translateX(260%)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(10px)}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
-<main>
-<h1><img src="/icon.svg" alt="" width="36" height="36" style="vertical-align:middle;margin-right:10px">SOS Tag — administration</h1>
-<p id="msg"></p>
+<header>
+  <div class="inner">
+    <img src="/icon.svg" alt="">
+    <div class="brand">
+      <h1>SOS Tag · Administration</h1>
+      <p>Create tag batches and print QR sheets</p>
+    </div>
+    <span class="who" id="who"></span>
+  </div>
+</header>
 
+<main>
 <section id="login" hidden>
-  <label>Email <input id="email" type="email" autocomplete="email"></label>
-  <label>Mot de passe <input id="pass" type="password" autocomplete="current-password"></label>
-  <button id="in">Se connecter</button>
-  <button id="reset" class="ghost" type="button">Mot de passe oublié ?</button>
+  <div class="card">
+    <h2>Sign in</h2>
+    <label><span class="l">Email</span><input id="email" type="email" autocomplete="email"></label>
+    <label><span class="l">Password</span><input id="pass" type="password" autocomplete="current-password"></label>
+    <div class="actions">
+      <button id="in" type="button">Sign in</button>
+    </div>
+    <div class="actions" style="justify-content:center">
+      <button id="reset" class="link" type="button">Forgot password?</button>
+    </div>
+  </div>
 </section>
 
 <section id="panel" hidden>
-  <p class="note">Connecté. <button id="out" class="ghost">Se déconnecter</button></p>
+  <div class="card">
+    <h2><span class="step">1</span> Create a batch of codes</h2>
+    <div class="row">
+      <label><span class="l">Batch name</span><input id="batchName"></label>
+      <label><span class="l">Number of codes (1 to 500)</span><input id="count" type="number" min="1" max="500" value="100"></label>
+    </div>
+    <label><span class="l">Public site address</span><input id="base" value="https://sos-tag.life"></label>
+    <div class="actions">
+      <button id="gen" type="button">Create batch</button>
+    </div>
+    <p class="hint" style="margin:12px 0 0">Codes are created as “unclaimed” (not yet activated).</p>
+    <div class="progress" id="genProgress"><i></i></div>
 
-  <h2>1. Créer un lot de codes</h2>
-  <label>Nom du lot <input id="batchName" value=""></label>
-  <label>Nombre de codes (1 à 500) <input id="count" type="number" min="1" max="500" value="100"></label>
-  <label>Adresse publique du site <input id="base" value="https://sos-tag-ph.pages.dev"></label>
-  <button id="gen">Créer le lot</button>
-  <p class="note">Les codes sont créés en statut « unclaimed » (non activés).</p>
-  <div id="result" hidden>
-    <p id="count-out"></p>
-    <button id="csv">Télécharger le CSV (code, URL)</button>
-    <button id="print" class="ghost">Imprimer les QR</button>
+    <div id="result" hidden>
+      <div class="banner" id="resultBanner"></div>
+      <div class="actions">
+        <button id="csv" type="button" class="outline">Download CSV (code, URL)</button>
+        <button id="print" type="button" class="ghost">Print QR sheet</button>
+      </div>
+    </div>
   </div>
 
-  <h2>2. Voir un lot</h2>
-  <label>Nom du lot <input id="viewBatch"></label>
-  <button id="view" class="ghost">Afficher</button>
-  <button id="printView" class="ghost" hidden>Imprimer les QR de ce lot</button>
-  <div id="stats"></div>
-  <table id="rows" hidden><thead><tr><th>Code</th><th>Statut</th></tr></thead><tbody></tbody></table>
+  <div class="card">
+    <h2><span class="step">2</span> View a batch</h2>
+    <div class="row">
+      <label style="flex:1"><span class="l">Batch name</span><input id="viewBatch" placeholder="e.g. 2026-10"></label>
+    </div>
+    <div class="actions">
+      <button id="view" type="button" class="outline">Show batch</button>
+      <button id="printView" type="button" class="ghost" hidden>Print QR sheet for this batch</button>
+    </div>
+
+    <div id="viewBox" hidden>
+      <div class="stats" id="stats"></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Code</th><th>Status</th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </div>
+    <p class="empty" id="viewEmpty" hidden>No codes in this batch.</p>
+  </div>
+
+  <div class="actions" style="justify-content:center;margin-top:18px">
+    <button id="out" type="button" class="link">Sign out</button>
+  </div>
 </section>
 </main>
+
+<div id="toast" role="status" aria-live="polite"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
@@ -70,74 +212,122 @@ import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, sendPasswordRe
 import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-functions.js";
 
-// Même configuration que app.html (projet sos-tag-ph).
+// Same configuration as app.html (sos-tag-ph project).
+// Keep the three values from your current file (apiKey, messagingSenderId, appId).
 const app = initializeApp({
-  apiKey: "AIzaSyDM0QaPpVg6M3NWPhIU_xi95l1cmKw9Ovg",
+  apiKey: "COLLER_ICI",
   authDomain: "sos-tag-ph.firebaseapp.com",
   projectId: "sos-tag-ph",
   storageBucket: "sos-tag-ph.firebasestorage.app",
-  messagingSenderId: "141929757363",
-  appId: "1:141929757363:web:cfc64e41dc0a71c8ec4ec6"
+  messagingSenderId: "COLLER_ICI",
+  appId: "COLLER_ICI"
 });
 const auth = getAuth(app), db = getFirestore(app), fn = getFunctions(app, "asia-southeast1");
 const $ = (id) => document.getElementById(id);
-const msg = (t) => ($("msg").textContent = t);
 let lastCodes = [];
 let viewedCodes = [];
 
+/* ---------- helpers ---------- */
+let toastTimer;
+function toast(text, kind = "") {
+  const t = $("toast");
+  t.textContent = text; t.className = "show " + kind;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => (t.className = ""), 3800);
+}
+function busy(btn, on, label) {
+  btn.disabled = on;
+  btn.classList.toggle("is-busy", on);
+  if (on) { btn.dataset.label = btn.textContent; btn.textContent = label || "Please wait…"; }
+  else if (btn.dataset.label) { btn.textContent = btn.dataset.label; delete btn.dataset.label; }
+}
+function ripple(e) {
+  const b = e.currentTarget, r = b.getBoundingClientRect(), s = document.createElement("span");
+  const size = Math.max(r.width, r.height);
+  s.className = "ripple";
+  s.style.width = s.style.height = size + "px";
+  s.style.left = (e.clientX - r.left - size / 2) + "px";
+  s.style.top = (e.clientY - r.top - size / 2) + "px";
+  b.append(s); setTimeout(() => s.remove(), 600);
+}
+document.querySelectorAll("button").forEach((b) => b.addEventListener("pointerdown", ripple));
+function countUp(el, to) {
+  const start = performance.now(), dur = 600;
+  const from = Number(el.textContent) || 0;
+  (function step(now) {
+    const p = Math.min((now - start) / dur, 1), v = Math.round(from + (to - from) * (1 - Math.pow(1 - p, 3)));
+    el.textContent = v;
+    if (p < 1) requestAnimationFrame(step);
+  })(start);
+}
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+/* ---------- auth ---------- */
 const d = new Date();
 $("batchName").value = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
 
-$("in").onclick = () => signInWithEmailAndPassword(auth, $("email").value, $("pass").value).catch((e) => msg(e.message));
+$("in").onclick = async () => {
+  const b = $("in"); busy(b, true, "Signing in…");
+  try { await signInWithEmailAndPassword(auth, $("email").value, $("pass").value); }
+  catch (e) { toast(e.message, "err"); busy(b, false); }
+};
 $("out").onclick = () => signOut(auth);
-$("reset").onclick = () => {
+$("reset").onclick = async () => {
   const email = $("email").value.trim();
-  if (!email) return msg("Entre ton adresse e-mail, puis clique sur « Mot de passe oublié ».");
-  sendPasswordResetEmail(auth, email)
-    .then(() => msg("Si ce compte existe, un e-mail de réinitialisation vient d'être envoyé. Pense à vérifier les spams."))
-    .catch((e) => msg(e.message));
+  if (!email) return toast("Enter your email address first.", "err");
+  try {
+    await sendPasswordResetEmail(auth, email);
+    toast("If this account exists, a reset email has been sent.");
+  } catch (e) { toast(e.message, "err"); }
 };
 
 onAuthStateChanged(auth, async (u) => {
   $("login").hidden = !!u;
   $("panel").hidden = true;
-  if (!u) return msg("Connexion requise.");
+  $("who").textContent = u ? u.email || "" : "";
+  if (!u) return;
   const t = await u.getIdTokenResult(true);
   if (t.claims.admin !== true) {
-    msg("Accès refusé : ce compte n'est pas administrateur.");
+    $("login").hidden = true;
+    $("who").textContent = "";
+    toast("Access denied: this account is not an administrator. Sign out and back in after a change of rights.", "err");
     return;
   }
-  msg("");
   $("panel").hidden = false;
 });
 
-$("gen").onclick = async () => {
+/* ---------- create a batch ---------- */
+$("gen").onclick = async (e) => {
   const count = Number($("count").value);
   const batch = $("batchName").value.trim();
-  if (!batch || !(count >= 1 && count <= 500)) return msg("Nom de lot requis, et un nombre entre 1 et 500.");
-  msg("Création du lot en cours…");
+  if (!batch || !(count >= 1 && count <= 500)) return toast("Batch name required, and a number between 1 and 500.", "err");
+  const b = $("gen"), bar = $("genProgress");
+  busy(b, true, "Creating…");
+  bar.classList.add("on", "indeterminate");
   try {
     const r = await httpsCallable(fn, "generateBatch")({ count, batch });
     lastCodes = r.data.codes;
-    $("count-out").textContent = `${lastCodes.length} codes créés dans le lot « ${batch} ».`;
-    $("result").hidden = false;
-    msg("Lot créé.");
-  } catch (e) { msg(e.message); }
+    $("resultBanner").textContent = `${lastCodes.length} codes created in batch “${batch}”.`;
+    const res = $("result"); res.hidden = false;
+    res.style.animation = "none"; void res.offsetWidth; res.style.animation = "";
+    toast("Batch created.");
+  } catch (err) { toast(err.message, "err"); }
+  bar.classList.remove("indeterminate"); bar.classList.remove("on");
+  busy(b, false);
 };
 
-const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-
+/* ---------- print sheet ---------- */
 function printSheet(codes, batch) {
-  if (!codes.length) return msg("Aucun code à imprimer.");
+  if (!codes.length) return toast("No codes to print.", "err");
   const base = $("base").value.trim().replace(/\/$/, "");
   const w = window.open("", "_blank");
-  if (!w) return msg("Autorise les fenêtres pop-up pour ce site, puis réessaie.");
+  if (!w) return toast("Allow pop-ups for this site, then try again.", "err");
   const cells = codes.map((c) =>
-    `<div class="cell"><div class="qr" data-url="${esc(base)}/s/${esc(c)}"></div>` +
+    `<div class="cell"><div class="qr" data-url="${esc(base)}/s?code=${esc(c)}"></div>` +
     `<div class="code">${esc(c)}</div><div class="lot">SOS Tag · ${esc(batch)}</div></div>`
   ).join("");
-  w.document.write(`<!doctype html><html lang="fr"><head><meta charset="utf-8">
-<title>Planche QR ${esc(batch)}</title>
+  w.document.write(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<title>QR sheet ${esc(batch)}</title>
 <style>
 @page { size: A4; margin: 10mm; }
 body { margin: 0; font-family: system-ui, sans-serif; }
@@ -159,44 +349,54 @@ window.onload = () => setTimeout(() => window.print(), 400);
 <\/script></body></html>`);
   w.document.close();
 }
-
 $("print").onclick = () => printSheet(lastCodes, $("batchName").value.trim());
 $("printView").onclick = () => printSheet(viewedCodes, $("viewBatch").value.trim());
 
 $("csv").onclick = () => {
   const base = $("base").value.trim().replace(/\/$/, "");
-  const rows = ["code,url", ...lastCodes.map((c) => `${c},${base}/s/${c}`)];
-  const blob = new Blob([rows.join("\n")], { type: "text/csv" });
+  const rows = ["code,url", ...lastCodes.map((c) => `${c},${base}/s?code=${c}`)];
   const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = `lot-${$("batchName").value.trim()}.csv`;
+  a.href = URL.createObjectURL(new Blob([rows.join("\n")], { type: "text/csv" }));
+  a.download = `batch-${$("batchName").value.trim()}.csv`;
   a.click();
 };
 
+/* ---------- view a batch ---------- */
 $("view").onclick = async () => {
   const batch = $("viewBatch").value.trim();
-  if (!batch) return msg("Entre le nom du lot.");
+  if (!batch) return toast("Enter a batch name.", "err");
+  const b = $("view"); busy(b, true, "Loading…");
   try {
     const snap = await getDocs(query(collection(db, "stickers"), where("batch", "==", batch)));
-    const counts = {};
-    const tbody = $("rows").querySelector("tbody");
-    tbody.replaceChildren();
+    const counts = { active: 0, unclaimed: 0, blocked: 0 };
+    const tbody = $("rows"); tbody.replaceChildren();
     viewedCodes = [];
     snap.forEach((doc) => {
       viewedCodes.push(doc.id);
-      const s = doc.data().status || "?";
+      const s = doc.data().status || "unknown";
       counts[s] = (counts[s] || 0) + 1;
       const tr = document.createElement("tr");
-      const a = document.createElement("td"); a.textContent = doc.id;
-      const b = document.createElement("td"); b.textContent = s;
-      tr.append(a, b); tbody.append(tr);
+      const a = document.createElement("td"), c = document.createElement("td");
+      const code = document.createElement("code"); code.textContent = doc.id; a.append(code);
+      const pill = document.createElement("span"); pill.className = "pill " + s; pill.textContent = s; c.append(pill);
+      tr.append(a, c); tbody.append(tr);
     });
-    $("stats").textContent = snap.empty ? "Aucun code dans ce lot." :
-      `Total : ${snap.size}. ` + Object.entries(counts).map(([k, v]) => `${k} : ${v}`).join(", ");
-    $("rows").hidden = snap.empty;
+    const stats = $("stats");
+    stats.replaceChildren();
+    const cards = [["total", "Total", snap.size], ["active", "Active", counts.active], ["unclaimed", "Unclaimed", counts.unclaimed], ["blocked", "Blocked", counts.blocked]];
+    cards.forEach(([cls, label, n]) => {
+      const box = document.createElement("div"); box.className = "stat " + cls;
+      const big = document.createElement("b"); big.textContent = "0";
+      const sp = document.createElement("span"); sp.textContent = label;
+      box.append(big, sp); stats.append(box);
+      countUp(big, n);
+    });
+    $("viewBox").hidden = snap.empty;
+    $("viewEmpty").hidden = !snap.empty;
     $("printView").hidden = snap.empty;
-    msg("");
-  } catch (e) { msg(e.message); }
+    if (!snap.empty) toast(`${snap.size} codes loaded.`);
+  } catch (err) { toast(err.message, "err"); }
+  busy(b, false);
 };
 </script>
 <script>if ("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js");</script>
