@@ -6,71 +6,84 @@
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="icon" href="/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/icon-192.png">
-<meta name="theme-color" content="#c8102e">
+<meta name="theme-color" content="#3b22b8">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="SOS Tag">
 <title>SOS Tag · My profile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
   --red:#c8102e;--red-dark:#9e0c24;--green:#17803d;--green-dark:#11692f;
-  --ink:#14181f;--muted:#6b7480;--bg:#f5f6f8;--card:#ffffff;--line:#e3e6ea;--field:#f9fafb;--ring:rgba(200,16,46,.18);
+  --accent:#6d4aff;--accent-dark:#5535d9;--yellow:#ffc72c;--teal:#12b5a6;
+  --ink:#15153a;--muted:#5b5f7e;--bg:#f6f5ff;--card:#ffffff;--line:#e4e2f5;--field:#faf9ff;--ring:rgba(109,74,255,.22);
   --radius:14px;--ease:cubic-bezier(.2,.7,.2,1);
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --ink:#eef1f5;--muted:#9aa3ae;--bg:#0f1218;--card:#181c24;--line:#2a303b;--field:#11151c;--ring:rgba(255,90,110,.25);
+    --ink:#eef1f5;--muted:#9aa3ae;--bg:#0f1218;--card:#181c24;--line:#2a303b;--field:#11151c;--ring:rgba(150,125,255,.3);
   }
 }
 :root[data-theme="dark"]{
-  --ink:#eef1f5;--muted:#9aa3ae;--bg:#0f1218;--card:#181c24;--line:#2a303b;--field:#11151c;--ring:rgba(255,90,110,.25);
+  --ink:#eef1f5;--muted:#9aa3ae;--bg:#0f1218;--card:#181c24;--line:#2a303b;--field:#11151c;--ring:rgba(150,125,255,.3);
 }
 *{box-sizing:border-box}
 [hidden]{display:none!important}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
 
 /* Header */
-header{background:var(--red);color:#fff;padding:16px 16px 22px}
-header .inner{max-width:600px;margin:0 auto;display:flex;align-items:center;gap:12px}
-header img{width:34px;height:34px;border-radius:8px;background:#fff;padding:3px}
+header{background:linear-gradient(135deg,#1c1170 0%,#5b2bd6 58%,#d6468a 100%);color:#fff;padding:16px 16px 40px;position:relative;overflow:hidden}
+header::after{content:"";position:absolute;width:220px;height:220px;border-radius:50%;background:#ff8a3d;filter:blur(70px);opacity:.45;right:-60px;top:-90px;pointer-events:none}
+header .inner{position:relative;z-index:1;max-width:600px;margin:0 auto;display:flex;align-items:center;gap:14px}
+header img{width:52px;height:52px;border-radius:15px;background:#fff;padding:6px;box-shadow:0 10px 20px -10px rgba(0,0,0,.6)}
 header .brand{flex:1;min-width:0}
-header h1{font-size:1.2rem;margin:0;font-weight:800;letter-spacing:.2px}
-header p{margin:2px 0 0;opacity:.85;font-size:.88rem}
-header .top-btn{background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.4);padding:8px 14px;font-size:.9rem}
-header .top-btn:hover{background:rgba(255,255,255,.28)}
+header h1{font-size:1.7rem;margin:0;font-weight:800;letter-spacing:-.02em;line-height:1.1}
+header p{margin:2px 0 0;opacity:.9;font-size:.9rem;font-weight:600}
+header .top-btn{background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.45);padding:8px 14px;font-size:.9rem;border-radius:999px}
+header .top-btn:hover{background:rgba(255,255,255,.3);box-shadow:none}
 
-main{max-width:600px;margin:-14px auto 0;padding:0 16px 120px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin-bottom:14px;box-shadow:0 1px 2px rgba(0,0,0,.04);animation:fadeUp .4s var(--ease) both}
+main{max-width:600px;margin:-22px auto 0;padding:0 16px 120px}
+.card{position:relative;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin-bottom:14px;box-shadow:0 1px 2px rgba(0,0,0,.04);animation:fadeUp .4s var(--ease) both}
 .card:nth-child(2){animation-delay:.04s}.card:nth-child(3){animation-delay:.08s}.card:nth-child(4){animation-delay:.12s}
 .card h2{font-size:.76rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 12px;font-weight:700}
+.fold>summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.fold>summary::-webkit-details-marker{display:none}
+.fold>summary h2{margin:0;flex:1}
+.fold>summary::after{content:"";width:9px;height:9px;border-right:2.5px solid var(--muted);border-bottom:2.5px solid var(--muted);transform:rotate(45deg);transition:transform .25s var(--ease);margin:-4px 4px 0 0}
+.fold[open]>summary::after{transform:rotate(225deg);margin-top:4px}
+.fold[open]>summary{margin-bottom:12px}
+.cnt{display:inline-block;min-width:22px;padding:1px 8px;border-radius:999px;background:var(--line);color:var(--ink);font-size:.72rem;letter-spacing:0;text-transform:none;text-align:center;vertical-align:1px;margin-left:6px}
+.cnt:empty{display:none}
 .card.danger{border-color:#f2b8c1}
 .hint{color:var(--muted);font-size:.92rem;margin:0 0 14px}
 label{display:block;font-weight:600;font-size:.93rem;margin:0 0 14px}
 label > span.l{display:block;margin-bottom:6px}
 input,textarea,select{width:100%;font:inherit;font-weight:400;color:var(--ink);background:var(--field);padding:11px 12px;border:1px solid var(--line);border-radius:10px;outline:none;transition:border-color .2s var(--ease), box-shadow .2s var(--ease), background-color .2s}
-input:focus,textarea:focus,select:focus{border-color:var(--red);box-shadow:0 0 0 4px var(--ring);background:var(--card)}
+input:focus,textarea:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 4px var(--ring);background:var(--card)}
 textarea{resize:vertical}
 .pw{position:relative}
 .pw input{padding-right:72px}
 .pw button.toggle{position:absolute;right:6px;top:50%;transform:translateY(-50%);margin:0;padding:6px 10px;font-size:.85rem;background:transparent;color:var(--muted);border:0;border-radius:8px}
 .pw button.toggle:hover{color:var(--ink);background:var(--line);box-shadow:none}
 .check{display:flex;align-items:center;gap:10px;font-weight:500;margin:4px 0 14px;cursor:pointer}
-.check input{width:18px;height:18px;margin:0;accent-color:var(--red)}
+.check input{width:18px;height:18px;margin:0;accent-color:var(--accent)}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 @media (max-width:480px){.row{grid-template-columns:1fr}}
 
 /* Buttons */
-button{font:inherit;font-weight:700;padding:12px 18px;border-radius:10px;border:1px solid var(--red);background:var(--red);color:#fff;cursor:pointer;
+button{font:inherit;font-weight:700;padding:12px 18px;border-radius:10px;border:1px solid var(--accent);background:var(--accent);color:#fff;cursor:pointer;
   transition:transform .12s var(--ease), background-color .25s var(--ease), border-color .25s var(--ease), color .25s var(--ease), box-shadow .25s var(--ease);
   display:inline-flex;align-items:center;justify-content:center;gap:8px}
-button:hover{background:var(--red-dark);box-shadow:0 6px 16px -6px rgba(200,16,46,.6)}
+button:hover{background:var(--accent-dark);box-shadow:0 6px 16px -6px rgba(109,74,255,.6)}
 button:active{transform:scale(.97)}
 button:focus-visible{outline:3px solid var(--ring);outline-offset:2px}
 button:disabled{cursor:progress;opacity:.85}
-button.ghost{background:transparent;color:var(--red)}
+button.ghost{background:transparent;color:var(--accent)}
 button.ghost:hover{background:var(--ring);box-shadow:none}
 button.outline{background:transparent;color:var(--ink);border-color:var(--line)}
 button.outline:hover{border-color:var(--ink);background:var(--field);box-shadow:none}
-button.link{background:transparent;color:var(--red);border-color:transparent;padding:10px 6px;font-weight:600}
+button.link{background:transparent;color:var(--accent);border-color:transparent;padding:10px 6px;font-weight:600}
 button.link:hover{background:transparent;text-decoration:underline;box-shadow:none}
 button.small{padding:8px 12px;font-size:.9rem}
 button.full{width:100%}
@@ -96,7 +109,7 @@ button.is-busy::before{content:"";width:16px;height:16px;border:2px solid curren
 
 /* Auth */
 #auth{max-width:420px;margin:0 auto}
-#auth .card{margin-top:-14px}
+#auth .card{margin-top:0}
 .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
 .actions > button{flex:1 1 140px}
 .divider{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:.85rem;margin:14px 0}
@@ -115,11 +128,72 @@ button.is-busy::before{content:"";width:16px;height:16px;border:2px solid curren
 .code-row label{flex:1;margin:0}
 .code-row button{margin-bottom:0}
 
+
+/* Welcome banner */
+.banner{position:relative;overflow:hidden;border-radius:22px;padding:22px 22px 20px;margin-bottom:16px;color:#fff;background:linear-gradient(135deg,#1c1170,#5b2bd6 58%,#d6468a);box-shadow:0 18px 30px -20px rgba(42,26,138,.7);animation:fadeUp .6s var(--ease) both}
+.banner::after{content:"";position:absolute;width:180px;height:180px;border-radius:50%;background:#ff8a3d;filter:blur(60px);opacity:.45;right:-50px;bottom:-70px;pointer-events:none}
+.banner>*{position:relative;z-index:1}
+.banner small{display:inline-block;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);border-radius:999px;padding:3px 12px;font-weight:700;font-size:.7rem;letter-spacing:.08em;margin-bottom:8px}
+.banner h2{margin:0 0 6px;font-size:1.5rem;letter-spacing:-.02em;line-height:1.15}
+.banner p{margin:0 0 12px;color:#e6e3ff;font-size:.96rem}
+.banner .bshort{display:none;margin:0;font-size:.9rem}
+.checks{display:grid;gap:5px;font-size:.9rem;font-weight:600}
+.checks span{opacity:0;transform:translateX(-10px);animation:slideIn .5s var(--ease) forwards}
+.checks span:nth-child(1){animation-delay:.35s}.checks span:nth-child(2){animation-delay:.5s}.checks span:nth-child(3){animation-delay:.65s}
+.checks b{color:var(--yellow);margin-right:6px}
+.banner .wlink{color:#fff;opacity:.85;padding:10px 0 0;text-decoration:underline;font-size:.85rem}
+.banner .wlink:hover{opacity:1}
+.banner.compact{padding:14px 20px}
+.banner.compact small,.banner.compact .bp,.banner.compact .checks,.banner.compact .wlink{display:none}
+.banner.compact h2{font-size:1.15rem;margin-bottom:2px}
+.banner.compact .bshort{display:block}
+
+/* Guided setup (same cards, shown as steps while the profile is incomplete) */
+#flow{position:relative}
+.rail,.dot,.stag,.stepbtns,.t-j{display:none}
+#flow.journey{padding-left:58px}
+#flow.journey .rail{display:block;position:absolute;left:23px;top:30px;bottom:44px;width:4px;border-radius:4px;background:var(--line)}
+.rail i{position:absolute;left:0;top:0;width:100%;height:0;border-radius:4px;background:linear-gradient(180deg,var(--accent),var(--teal));transition:height .8s var(--ease)}
+#flow.journey #insCard{display:none}
+#flow.journey .t-n{display:none}
+#flow.journey .t-j{display:inline}
+#flow.journey .step{padding:0;border-width:2px;transition:border-color .3s,box-shadow .3s,opacity .3s;animation:fadeUp .6s var(--ease) both}
+#flow.journey .step[data-step="0"]{animation-delay:.5s}
+#flow.journey .step[data-step="1"]{animation-delay:.7s}
+#flow.journey .step[data-step="2"]{animation-delay:.9s}
+#flow.journey .step .sh{display:flex;align-items:center;gap:10px;padding:16px 18px;margin:0;font-size:1.05rem;text-transform:none;letter-spacing:0;color:var(--ink);cursor:pointer}
+#flow.journey .stag{display:inline-block;margin-left:auto;font-size:.72rem;font-weight:800;padding:3px 10px;border-radius:999px;background:var(--field);color:var(--muted);border:1px solid var(--line)}
+#flow.journey .step .sb{display:grid;grid-template-rows:0fr;transition:grid-template-rows .5s var(--ease)}
+#flow.journey .step .sbi{min-height:0;overflow:hidden;padding:0 18px}
+#flow.journey .step.active .sb{grid-template-rows:1fr}
+#flow.journey .step.active .sbi{padding:4px 18px 18px;margin:-4px 0 0}
+#flow.journey .step.active{border-color:var(--accent);box-shadow:0 20px 34px -22px rgba(109,74,255,.7)}
+#flow.journey .step.active .stag{background:#ece8ff;color:var(--accent)}
+#flow.journey .step.locked{opacity:.55}
+#flow.journey .step.done .stag{background:#dff6ec;color:var(--green);border-color:transparent}
+#flow.journey .step.skipped .stag{background:var(--line)}
+#flow.journey .step.done:not(.active) .sh{color:var(--muted)}
+#flow.journey .dot{display:grid;position:absolute;left:-58px;top:9px;width:46px;height:46px;border-radius:50%;place-items:center;font-weight:800;background:var(--card);border:3px solid var(--line);color:var(--muted);transition:all .4s var(--ease)}
+.dot svg{width:22px;height:22px;fill:none;stroke:#fff;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:30;stroke-dashoffset:30;position:absolute}
+#flow.journey .step.active .dot{background:linear-gradient(135deg,#6d4aff,#2f7bff);border-color:transparent;color:#fff;transform:scale(1.1);animation:pulse 2s infinite}
+#flow.journey .step.done .dot{background:var(--green);border-color:transparent;color:transparent;transform:none;animation:none}
+#flow.journey .step.done .dot svg{stroke-dashoffset:0;transition:stroke-dashoffset .5s .15s ease}
+#flow.journey .stepbtns{display:flex;align-items:center;gap:6px;margin-top:6px}
+.smsg{margin:8px 0 0}
+.fin{text-align:center;color:#fff;background:linear-gradient(135deg,#12b5a6,#2f7bff);border:0;overflow:hidden}
+.fin h2{color:#fff;font-size:1.4rem;text-transform:none;letter-spacing:-.01em;margin:0 0 4px}
+.fin p{margin:0 0 12px}
+.fin button{background:#fff;color:var(--ink);border-color:#fff}
+.fin button:hover{background:#fff}
+.confetti i{position:absolute;top:-10px;width:8px;height:14px;border-radius:2px;animation:fall 1.6s ease-in forwards}
+@keyframes slideIn{to{opacity:1;transform:none}}
+@keyframes fall{to{transform:translateY(190px) rotate(300deg);opacity:0}}
+
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:none}}
 @keyframes popIn{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
-@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(200,16,46,.45)}50%{box-shadow:0 0 0 8px rgba(200,16,46,0)}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(109,74,255,.45)}50%{box-shadow:0 0 0 8px rgba(109,74,255,0)}}
 @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -136,6 +210,18 @@ button.is-busy::before{content:"";width:16px;height:16px;border:2px solid curren
 </header>
 
 <main>
+<div class="banner" id="welcome">
+  <small>WELCOME</small>
+  <h2>Your emergency profile</h2>
+  <p class="bp">Fill it in once. If you ever need help, whoever scans your sticker sees what you chose to show, and your contacts are told where you are.</p>
+  <p class="bshort">Never shared, never sold. Every scan is logged.</p>
+  <div class="checks">
+    <span><b>&#10003;</b>You're in control. Empty fields stay hidden.</span>
+    <span><b>&#10003;</b>Your data stays yours. Never shared, never sold.</span>
+    <span><b>&#10003;</b>You'll know. Every scan is logged.</span>
+  </div>
+  <button type="button" class="link wlink" id="skipSetup" hidden>Skip the guided setup</button>
+</div>
 <p id="msg" role="status"></p>
 
 <section id="auth" hidden>
@@ -161,72 +247,98 @@ button.is-busy::before{content:"";width:16px;height:16px;border:2px solid curren
 </section>
 
 <section id="main" hidden>
-  <form id="f" novalidate>
-    <div class="card">
-      <h2>Emergency details</h2>
-      <p class="hint">Anyone who scans your tag sees what you fill in here. Leave a field empty to hide it.</p>
-      <label><span class="l">Full name</span><input id="name" autocomplete="name"></label>
-      <div class="row">
-        <label><span class="l">Date of birth</span><input id="dob" type="date"></label>
-        <label><span class="l">Blood type</span><input id="blood" placeholder="e.g. O+"></label>
-      </div>
-      <label><span class="l">Allergies</span><textarea id="allergies" rows="2"></textarea></label>
-      <label><span class="l">Medical conditions</span><textarea id="conditions" rows="2"></textarea></label>
-      <label><span class="l">Medications</span><textarea id="meds" rows="2"></textarea></label>
-      <label><span class="l">Notes for responders</span><textarea id="notes" rows="2"></textarea></label>
+  <div id="flow">
+    <div class="rail"><i id="fill"></i></div>
+
+    <div class="card fin" id="finale" hidden>
+      <div class="confetti" id="confetti"></div>
+      <h2>Your tag is live</h2>
+      <p>Go out there. We have your back.</p>
+      <button type="button" id="finOk">Got it</button>
     </div>
 
-    <div class="card">
-      <h2>Emergency contacts</h2>
-      <div class="row">
-        <label><span class="l">Contact 1 name</span><input id="c1n"></label>
-        <label><span class="l">Contact 1 phone</span><input id="c1p" type="tel"></label>
+    <form id="f" novalidate>
+      <div class="card step" data-step="0">
+        <div class="dot"><span>1</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg></div>
+      <h2 class="sh"><span class="t-n">Emergency details</span><span class="t-j">Fill in your details</span><span class="stag"></span></h2>
+        <div class="sb"><div class="sbi">
+          <p class="hint">Anyone who scans your tag sees what you fill in here. Leave a field empty to hide it.</p>
+          <label><span class="l">Full name</span><input id="name" autocomplete="name"></label>
+          <div class="row">
+            <label><span class="l">Date of birth</span><input id="dob" type="date"></label>
+            <label><span class="l">Blood type</span><input id="blood" placeholder="e.g. O+"></label>
+          </div>
+          <label><span class="l">Allergies</span><textarea id="allergies" rows="2"></textarea></label>
+          <label><span class="l">Medical conditions</span><textarea id="conditions" rows="2"></textarea></label>
+          <label><span class="l">Medications</span><textarea id="meds" rows="2"></textarea></label>
+          <label><span class="l">Notes for responders</span><textarea id="notes" rows="2"></textarea></label>
+          <p class="field-msg smsg" role="status"></p>
+          <div class="stepbtns"><button type="submit" data-go="0">Save my details</button><button type="button" class="link" data-skip="0">Skip for now</button></div>
+        </div></div>
       </div>
-      <div class="row">
-        <label><span class="l">Contact 2 name</span><input id="c2n"></label>
-        <label><span class="l">Contact 2 phone</span><input id="c2p" type="tel"></label>
+
+      <div class="card step" data-step="1">
+        <div class="dot"><span>2</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg></div>
+      <h2 class="sh"><span class="t-n">Emergency contacts</span><span class="t-j">Add your contacts</span><span class="stag"></span></h2>
+        <div class="sb"><div class="sbi">
+          <p class="hint">Who should be told if you need help? Add at least one phone number.</p>
+          <div class="row">
+            <label><span class="l">Contact 1 name</span><input id="c1n"></label>
+            <label><span class="l">Contact 1 phone</span><input id="c1p" type="tel"></label>
+          </div>
+          <div class="row">
+            <label><span class="l">Contact 2 name</span><input id="c2n"></label>
+            <label><span class="l">Contact 2 phone</span><input id="c2p" type="tel"></label>
+          </div>
+          <label><span class="l">Your own phone <span class="hint">(also receives location alerts)</span></span><input id="ownerPhone" type="tel"></label>
+          <p class="field-msg smsg" role="status"></p>
+          <div class="stepbtns"><button type="submit" data-go="1">Save contacts</button><button type="button" class="link" data-skip="1">Skip for now</button></div>
+        </div></div>
       </div>
-      <label><span class="l">Your own phone <span class="hint">(also receives location alerts)</span></span><input id="ownerPhone" type="tel"></label>
-    </div>
 
-    <div class="card">
-      <h2>Health insurance</h2>
-      <label><span class="l">Insurer</span>
-        <select id="insurer">
-          <option value="">None</option>
-          <option>PhilHealth</option>
-          <option>Maxicare</option>
-          <option>Intellicare</option>
-          <option>Medicard</option>
-          <option value="Other">Other</option>
-        </select>
-      </label>
-      <label id="insurerOtherWrap" hidden><span class="l">Insurer name</span><input id="insurerOther"></label>
-      <label><span class="l">Member or PIN number</span><input id="insurerNo"></label>
-      <label class="check"><input type="checkbox" id="showInsurer">Show my insurance number to responders</label>
-    </div>
-  </form>
+      <div class="card" id="insCard">
+        <h2>Health insurance</h2>
+        <label><span class="l">Insurer</span>
+          <select id="insurer">
+            <option value="">None</option>
+            <option>PhilHealth</option>
+            <option>Maxicare</option>
+            <option>Intellicare</option>
+            <option>Medicard</option>
+            <option value="Other">Other</option>
+          </select>
+        </label>
+        <label id="insurerOtherWrap" hidden><span class="l">Insurer name</span><input id="insurerOther"></label>
+        <label><span class="l">Member or PIN number</span><input id="insurerNo"></label>
+        <label class="check"><input type="checkbox" id="showInsurer">Show my insurance number to responders</label>
+      </div>
+    </form>
 
-  <div class="card">
-    <h2>Activate a tag</h2>
-    <p class="hint">Enter the 12-character code printed on your sticker.</p>
-    <div class="code-row">
-      <label><span class="l">Tag code</span><input id="code" maxlength="12" autocapitalize="characters" autocomplete="off"></label>
-      <button type="button" id="activate" class="outline">Activate tag</button>
+    <div class="card step" data-step="2">
+      <div class="dot"><span>3</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg></div>
+      <h2 class="sh"><span class="t-n">Activate a tag</span><span class="t-j">Activate your tag</span><span class="stag"></span></h2>
+      <div class="sb"><div class="sbi">
+        <p class="hint">Enter the 12-character code printed on your sticker.</p>
+        <div class="code-row">
+          <label><span class="l">Tag code</span><input id="code" maxlength="12" autocapitalize="characters" autocomplete="off"></label>
+          <button type="button" id="activate" class="outline">Activate tag</button>
+        </div>
+        <p id="tagmsg" class="field-msg" role="status"></p>
+        <div class="stepbtns"><button type="button" class="link" data-skip="2">Skip for now</button></div>
+      </div></div>
     </div>
-    <p id="tagmsg" class="field-msg" role="status"></p>
   </div>
 
-  <div class="card">
-    <h2>My tags</h2>
+  <details class="card fold" id="foldTags" open>
+    <summary><h2>My tags <span class="cnt" id="tagcount"></span></h2></summary>
     <div id="tags"></div>
-  </div>
+  </details>
 
-  <div class="card">
-    <h2>Access log</h2>
+  <details class="card fold" id="foldScans">
+    <summary><h2>Access log <span class="cnt" id="scancount"></span></h2></summary>
     <p class="hint">Every time someone scans your tag and opens your details, it is recorded here, with the time and whether they shared their location.</p>
     <div id="scanlog"></div>
-  </div>
+  </details>
 
   <div class="card danger">
     <h2>Danger zone</h2>
@@ -273,6 +385,55 @@ function busy(btn, on, label) {
   if (on) btn.textContent = label || "Please wait…";
   else { btn.textContent = btn.dataset.label; delete btn.dataset.label; }
 }
+
+/* ---------- guided setup (steps) ---------- */
+let savedPub = {}, tagCount = 0, journey = false, viewStep = null, lastGo = null;
+const skipped = new Set();
+const flags = () => [!!(savedPub.name || "").trim(), (savedPub.contacts || []).length > 0, tagCount > 0];
+
+function confetti() {
+  const c = $("confetti"); c.replaceChildren();
+  ["#ffc72c", "#ff5d8f", "#fff", "#6d4aff", "#ff8a3d"].forEach((col) => {
+    for (let j = 0; j < 6; j++) {
+      const e = document.createElement("i");
+      e.style.background = col; e.style.left = Math.random() * 100 + "%"; e.style.animationDelay = Math.random() * .4 + "s";
+      c.append(e);
+    }
+  });
+}
+
+function renderFlow() {
+  const u = auth.currentUser;
+  const done = flags();
+  const pending = done.map((d, i) => !d && !skipped.has(i));
+  const first = pending.indexOf(true);
+  if (journey && first === -1) {            // every step is done or skipped: leave the guided mode
+    journey = false;
+    if (done.every(Boolean)) { $("finale").hidden = false; confetti(); }
+  }
+  $("flow").classList.toggle("journey", journey);
+  $("skipSetup").hidden = !journey;
+  $("welcome").classList.toggle("compact", !!u && !journey);
+  $("savebar").hidden = !u || journey;
+  const act = journey ? (viewStep !== null ? viewStep : first) : -1;
+  document.querySelectorAll("#flow .step").forEach((el, i) => {
+    el.classList.toggle("done", done[i]);
+    el.classList.toggle("skipped", !done[i] && skipped.has(i));
+    el.classList.toggle("active", i === act);
+    el.classList.toggle("locked", journey && i !== act && !done[i] && !skipped.has(i));
+    el.querySelector(".stag").textContent = done[i] ? "Done" : skipped.has(i) ? "Skipped" : "Step " + (i + 1);
+  });
+  const n = done.filter((d, i) => d || skipped.has(i)).length;
+  $("fill").style.height = Math.min(100, n / 3 * 100 + (act >= 0 ? 12 : 0)) + "%";
+}
+
+document.querySelectorAll("#flow .sh").forEach((h, i) => h.addEventListener("click", () => { if (journey) { viewStep = i; renderFlow(); } }));
+document.querySelectorAll("[data-skip]").forEach((b) => b.addEventListener("click", () => {
+  const i = Number(b.dataset.skip); skipped.add(i); viewStep = null; renderFlow();
+}));
+document.querySelectorAll("[data-go]").forEach((b) => b.addEventListener("click", () => { lastGo = Number(b.dataset.go); }));
+$("skipSetup").onclick = () => { journey = false; renderFlow(); };
+$("finOk").onclick = () => { $("finale").hidden = true; };
 
 /* ---------- password show / hide ---------- */
 document.querySelectorAll("button.toggle").forEach((b) => {
@@ -333,10 +494,11 @@ $("insurer").onchange = toggleOther;
 onAuthStateChanged(auth, async (u) => {
   $("auth").hidden = !!u; $("main").hidden = !u;
   $("savebar").hidden = !u; $("out").hidden = !u;
-  if (!u) return;
+  if (!u) { journey = false; $("welcome").classList.remove("compact"); $("skipSetup").hidden = true; return; }
   const s = await getDoc(doc(db, "profiles", u.uid));
   const data = s.exists() ? s.data() : {};
   const p = data.public || {};
+  savedPub = p;
   fields.forEach((k) => ($(k).value = p[k] || ""));
   const c = p.contacts || [];
   ["c1", "c2"].forEach((k, i) => { $(k + "n").value = c[i]?.name || ""; $(k + "p").value = c[i]?.phone || ""; });
@@ -349,13 +511,28 @@ onAuthStateChanged(auth, async (u) => {
   $("showInsurer").checked = !!p.showInsurer;
   toggleOther();
   saved = true; setSaveState("saved");
-  listTags(u); listScans(u);
+  listScans(u);
+  await listTags(u);
+  skipped.clear(); viewStep = null; $("finale").hidden = true;
+  journey = !flags().every(Boolean);
+  renderFlow();
 });
 
 /* ---------- save profile (only this button saves the information) ---------- */
+const STEP_MSG = ["Please enter your full name.", "Add at least one contact phone number."];
+function afterSave() {
+  const step = lastGo; lastGo = null;
+  document.querySelectorAll(".smsg").forEach((m) => { m.textContent = ""; m.className = "field-msg smsg"; });
+  if (journey && step !== null && !flags()[step]) {
+    const m = document.querySelectorAll("#f .smsg")[step];
+    m.textContent = STEP_MSG[step]; m.className = "field-msg smsg err";
+    return;
+  }
+  viewStep = null; renderFlow();
+}
 $("f").onsubmit = async (e) => {
   e.preventDefault();
-  if (saved) return;
+  if (saved) { afterSave(); return; }
   const u = auth.currentUser, pub = {};
   fields.forEach((k) => (pub[k] = $(k).value.trim()));
   pub.contacts = ["c1", "c2"].map((k) => ({ name: $(k + "n").value.trim(), phone: $(k + "p").value.trim() })).filter((c) => c.phone);
@@ -366,10 +543,15 @@ $("f").onsubmit = async (e) => {
   setSaveState("busy");
   try {
     await setDoc(doc(db, "profiles", u.uid), { ownerUid: u.uid, ownerPhone: $("ownerPhone").value.trim(), public: pub });
+    savedPub = pub;
     saved = true; setSaveState("saved");
+    afterSave();
   } catch (err) {
+    lastGo = null;
     saved = false; setSaveState("dirty");
     flash($("status"), err.message, "err");
+    const step = journey ? [...document.querySelectorAll("#f .step")].findIndex((x) => x.classList.contains("active")) : -1;
+    if (step >= 0) { const m = document.querySelectorAll("#f .smsg")[step]; m.textContent = err.message; m.className = "field-msg smsg err"; }
   }
 };
 
@@ -383,7 +565,8 @@ $("activate").onclick = async () => {
     await httpsCallable(fn, "claimSticker")({ code });
     flash($("tagmsg"), "Tag activated.", "ok");
     $("code").value = "";
-    listTags(auth.currentUser);
+    await listTags(auth.currentUser);
+    viewStep = null; renderFlow();
   } catch (err) {
     flash($("tagmsg"), err.message, "err");
   }
@@ -414,6 +597,7 @@ async function listScans(u) {
     const locs = lc.docs.map((d) => ({ code: d.data().code, t: ms(d) }));
     const rows = sc.docs.map((d) => ({ code: d.data().code, t: ms(d) })).sort((a, b) => b.t - a.t);
     box.replaceChildren();
+    $("scancount").textContent = rows.length ? String(rows.length) : "";
     if (!rows.length) { const p = document.createElement("p"); p.className = "hint"; p.textContent = "No scans yet. Nobody has opened your details."; box.append(p); return; }
     rows.slice(0, 20).forEach((r) => {
       const row = document.createElement("div"); row.className = "tag";
@@ -432,7 +616,9 @@ async function listScans(u) {
 /* ---------- tags list ---------- */
 async function listTags(u) {
   const q = await getDocs(query(collection(db, "stickers"), where("ownerUid", "==", u.uid)));
+  tagCount = q.size;
   const box = $("tags"); box.replaceChildren();
+  $("tagcount").textContent = q.size ? String(q.size) : "";
   if (q.empty) { const p = document.createElement("p"); p.className = "hint"; p.textContent = "No tag activated yet."; box.append(p); return; }
   q.forEach((d) => {
     const s = d.data(), row = document.createElement("div"), left = document.createElement("div"), b = document.createElement("button");
@@ -466,4 +652,4 @@ async function listTags(u) {
 </script>
 <script>if ("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js");</script>
 </body>
-</html>
+</html> 
